@@ -20,6 +20,7 @@ One [Next.js](https://nextjs.org) deployment with:
 | `/portfolio/blog` | Project case studies (MDX) |
 | `/portfolio/lets-discuss` | Contact form |
 | `/api/contact` | Contact API (Resend or mailto fallback) |
+| `/api/chat` | Maya AI chat (Gemini 2.5 Flash) |
 
 ## Local development
 
@@ -38,6 +39,8 @@ Open [http://localhost:3000](http://localhost:3000) for the personal site and [h
 ## Environment variables
 
 Copy [`.env.example`](.env.example) to `.env.local` and set values as needed.
+
+**AI chat:** set `GEMINI_API_KEY` in `.env.local` (local) and in Vercel → Environment Variables (production). The key stays server-side only.
 
 ## Deploy to Vercel (one project)
 

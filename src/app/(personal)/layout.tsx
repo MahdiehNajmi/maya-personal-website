@@ -1,3 +1,4 @@
+import { MayaChatWidget } from "@/components/personal/maya-chat-widget";
 import { DockNav } from "@/components/personal/dock-nav";
 import {
   PersonalClientEffects,
@@ -30,6 +31,7 @@ export default function PersonalLayout({
       <PersonalClientEffects />
       <TypingHero />
       {children}
+      <MayaChatWidget />
     </>
   );
 }

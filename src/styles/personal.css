@@ -1537,3 +1537,244 @@ h1 {
     height: 1.2rem;
   }
 }
+
+/* —— Maya AI chat widget —— */
+.maya-chat {
+  position: fixed;
+  right: 1.25rem;
+  bottom: calc(var(--dock-clearance) + 0.5rem);
+  z-index: 200;
+  font-family: inherit;
+}
+
+.maya-chat__launcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.12);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.maya-chat__launcher:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+}
+
+:root[data-theme="dark"] .maya-chat__launcher {
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.35);
+}
+
+.maya-chat__panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(3.5rem + 0.75rem);
+  display: flex;
+  flex-direction: column;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: min(28rem, calc(100dvh - var(--dock-clearance) - 6rem));
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+}
+
+:root[data-theme="dark"] .maya-chat__panel {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45);
+}
+
+.maya-chat__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(
+    135deg,
+    rgba(91, 108, 250, 0.12),
+    rgba(155, 140, 255, 0.08)
+  );
+}
+
+.maya-chat__header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.maya-chat__title {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.maya-chat__subtitle {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.maya-chat__close {
+  display: flex;
+  padding: 0.35rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.maya-chat__close:hover {
+  color: var(--text);
+  background: rgba(148, 163, 184, 0.15);
+}
+
+.maya-chat__messages {
+  flex: 1;
+  min-height: 10rem;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.maya-chat__bubble {
+  max-width: 92%;
+  padding: 0.65rem 0.85rem;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  border-radius: 1rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.maya-chat__bubble--assistant {
+  align-self: flex-start;
+  background: rgba(248, 250, 252, 0.95);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 0.25rem;
+}
+
+:root[data-theme="dark"] .maya-chat__bubble--assistant {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+.maya-chat__bubble--user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, #5b6cfa, #9b8cff);
+  color: #fff;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.maya-chat__typing {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  padding: 0.85rem 1rem;
+}
+
+.maya-chat__typing span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: maya-chat-bounce 1.2s ease-in-out infinite;
+}
+
+.maya-chat__typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.maya-chat__typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes maya-chat-bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.maya-chat__error {
+  margin: 0 1rem;
+  font-size: 0.78rem;
+  color: #dc2626;
+}
+
+.maya-chat__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.maya-chat__input {
+  width: 100%;
+  resize: none;
+  padding: 0.6rem 0.75rem;
+  font: inherit;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: rgba(248, 250, 252, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+}
+
+:root[data-theme="dark"] .maya-chat__input {
+  background: rgba(15, 23, 42, 0.6);
+}
+
+.maya-chat__input:focus {
+  outline: 2px solid rgba(91, 108, 250, 0.45);
+  outline-offset: 1px;
+}
+
+.maya-chat__send {
+  align-self: flex-end;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #5b6cfa, #7c6cf0);
+  border: none;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.maya-chat__send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.maya-chat__send:not(:disabled):hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 480px) {
+  .maya-chat {
+    right: 0.75rem;
+    bottom: calc(var(--dock-clearance) + 0.25rem);
+  }
+
+  .maya-chat__panel {
+    width: min(20rem, calc(100vw - 1.5rem));
+  }
+}
