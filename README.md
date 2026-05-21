@@ -1,5 +1,16 @@
 # Maya — personal website + portfolio (single app)
 
+## Links (use these)
+
+| | URL |
+|---|-----|
+| **Production site** | **https://maya-personal-website.vercel.app** |
+| Portfolio | https://maya-personal-website.vercel.app/portfolio |
+| GitHub | https://github.com/MahdiehNajmi/maya-personal-website |
+| Vercel project | https://vercel.com/mahdiehnajmis-projects/maya-personal-website |
+
+> Vercel also shows URLs like `maya-personal-website-p0q2ztmns-….vercel.app` in the dashboard. Those are **per-deployment preview IDs** and cannot be renamed. Your public site is always **maya-personal-website.vercel.app** (assigned to production).
+
 One [Next.js](https://nextjs.org) deployment with:
 
 | Route | Content |
