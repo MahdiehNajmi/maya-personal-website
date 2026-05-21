@@ -1,0 +1,59 @@
+---
+title: "ER Room — Hospital Wait-Time Tracker"
+publishedAt: "2026-03-30"
+author: "Maya"
+summary: "Full-stack ER wait-time prototype: ranked hospitals, live waitlist updates, and admin dashboards backed by PostgreSQL."
+image: "/projects/er-room/patient-dashboard.png"
+---
+
+Patients waste hours visiting ERs without knowing current wait times. Hospitals lack a unified system to share real-time capacity, so some facilities overcrowd while nearby centers stay underused.
+
+## Approach
+
+I built a full-stack app where healthcare facilities manage their own data, and patients see a location-based ranked list of nearby centers sorted by average wait time. The waitlist updates dynamically as patients pick a center, with a separate dashboard for patient history.
+
+## Tools used
+
+| Layer        | Technology                          |
+| ------------ | ----------------------------------- |
+| Frontend     | React, Material UI, JavaScript      |
+| Backend      | Node.js, Express.js                 |
+| Data         | PostgreSQL                          |
+
+## Results
+
+The prototype dynamically re-ranks hospitals by wait time, gives patients real-time decision support, and gives administrators a clear patient history dashboard.
+
+## Screenshots
+
+Screenshots were **re-cropped** to drop the macOS dock / browser chrome strip at the bottom so the UI reads clearly in the portfolio.
+
+### Data layer (PostgreSQL)
+
+Latest waitlist counts per hospital, queried in Postico.
+
+![PostgreSQL query showing hospital waitlist snapshot](/projects/er-room/data-layer-postico.png)
+
+### Admin — patient directory
+
+Patient CRUD with search, status, and visit links (`localhost` dev build).
+
+![Patients management table](/projects/er-room/patients-admin.png)
+
+### Admin — edit patient
+
+Modal workflow for updating demographics and status.
+
+![Edit patient modal](/projects/er-room/edit-patient-modal.png)
+
+### Patient flow — choose a hospital
+
+Visit booking view with ranked waitlist and queue numbers.
+
+![Hospital waitlist selection during a patient visit](/projects/er-room/hospital-waitlist-selection.png)
+
+### Patient dashboard
+
+Wait times by facility and visit history with outcomes and satisfaction.
+
+![Patient dashboard with wait-time chart and visit records](/projects/er-room/patient-dashboard.png)

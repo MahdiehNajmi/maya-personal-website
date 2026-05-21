@@ -1,0 +1,36 @@
+---
+title: "Anti-Spoof Face Detection"
+publishedAt: "2026-05-14"
+author: "Maya"
+summary: "Two-phase YOLOv11 + VGG16/ResNet50 pipeline on 65k+ face images for print, screen, and mask spoof detection at 99.8% accuracy."
+image: "/projects/anti-spoof/antispoof-vision-demo.png"
+---
+
+Facial recognition is easy to fool with **printed photos**, **screen replays**, and **3D masks**, which weakens authentication and surveillance when liveness is not enforced.
+
+## Approach
+
+The project trains deep models on **65,000+ images (~9 GB)** mixing genuine and spoofed faces. A **two-phase** design keeps inference practical:
+
+1. **Phase 1 — YOLOv11** for real-time **face localization**.  
+2. **Phase 2 — hybrid VGG16 + ResNet50** classifier for **spoof vs. real** on the detected crop.
+
+Training used **Google Colab GPUs** for large-scale runs, with **Jupyter** for experiments and **TensorFlow** for model code. Tabular metrics and splits rely on **Pandas**, **NumPy**, and **scikit-learn**. Source and iteration live on **GitHub**; the shipped experience includes a **TensorFlow.js** web demo.
+
+## Tools
+
+| Area            | Stack                                                                 |
+| --------------- | --------------------------------------------------------------------- |
+| Detection       | YOLOv11                                                               |
+| Classification  | VGG16, ResNet50, TensorFlow                                           |
+| Data & ML utils | Pandas, NumPy, scikit-learn                                           |
+| Training env    | Google Colab, Jupyter Notebook                                        |
+| Product         | JavaScript (browser demo), GitHub                                     |
+
+## Results
+
+**99.8% classification accuracy** on spoof detection, with a model that generalizes across multiple attack styles so real faces stay separated from fraudulent inputs.
+
+## Live demo
+
+Try the in-browser pipeline (YOLOv11 + TensorFlow.js) here: **[Live demo — YOLOv11 TensorFlow.js app](https://eian-irca.github.io/web-app-v5_CelebA_Spoof/)**
