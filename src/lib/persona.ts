@@ -7,6 +7,9 @@ let cachedPersona: string | null = null;
 
 /** Loads the AI-clone system prompt from content/persona.md (server-only). */
 export function loadPersonaPrompt(): string {
+  if (process.env.MAHI_COMPACT_PERSONA === "true") {
+    return FALLBACK_PERSONA;
+  }
   if (cachedPersona) return cachedPersona;
   try {
     const path = join(process.cwd(), "content", "persona.md");

@@ -8,12 +8,13 @@ import {
   sleep,
 } from "@/lib/gemini-retry";
 
-export const GEMINI_MODEL = "gemini-2.5-flash";
-const FALLBACK_MODEL = "gemini-2.0-flash";
+/** Lighter model first — better availability on free-tier API keys. */
+export const GEMINI_MODEL = "gemini-2.0-flash";
+const FALLBACK_MODEL = "gemini-2.5-flash";
 const REQUEST_TIMEOUT_MS = 22_000;
 /** Stay under Vercel 60s limit (chat route maxDuration). */
 const SERVER_BUDGET_MS = 48_000;
-const MAX_RETRIES_PER_MODEL = 1;
+const MAX_RETRIES_PER_MODEL = 0;
 /** Keep history short to reduce tokens and API load. */
 const MAX_HISTORY_TURNS = 16;
 
@@ -142,7 +143,11 @@ export async function generateMayaReply(
     parts: [{ text: m.content }],
   }));
 
-  const systemInstruction = `${loadPersonaPrompt()}\n\nYour usual opening line when someone starts chatting: "${MAYA_CHAT_GREETING}"`;
+  const persona = loadPersonaPrompt();
+  const systemInstruction =
+    persona.length > 2000
+      ? `${persona.slice(0, 2000)}…\n\nYour usual opening line: "${MAYA_CHAT_GREETING}"`
+      : `${persona}\n\nYour usual opening line when someone starts chatting: "${MAYA_CHAT_GREETING}"`;
 
   return callWithRetries(contents, systemInstruction);
 }

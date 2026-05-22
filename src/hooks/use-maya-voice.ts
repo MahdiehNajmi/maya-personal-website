@@ -1,5 +1,6 @@
 "use client";
 
+import { useGeminiTts } from "@/lib/mahi-config";
 import { enqueueGeminiClientRequest } from "@/lib/gemini-api-queue";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -252,32 +253,44 @@ export function useMayaVoice() {
         return;
       }
 
-      return enqueueGeminiClientRequest(async () => {
+      const runSpeak = async () => {
         unlockSpeechSynthesis();
         stopSpeaking();
-
-        const controller = new AbortController();
-        ttsAbortRef.current = controller;
-        const ttsTimeoutId = window.setTimeout(() => controller.abort(), 28_000);
-        setTtsLoading(true);
         setSpeaking(true);
 
         try {
-          await speakWithGemini(text, controller.signal);
-        } catch (error) {
-          if (controller.signal.aborted) return;
-          await speakWithBrowser(text);
+          if (useGeminiTts()) {
+            const controller = new AbortController();
+            ttsAbortRef.current = controller;
+            const ttsTimeoutId = window.setTimeout(
+              () => controller.abort(),
+              28_000,
+            );
+            setTtsLoading(true);
+            try {
+              await speakWithGemini(text, controller.signal);
+            } catch (error) {
+              if (controller.signal.aborted) return;
+              await speakWithBrowser(text);
+            } finally {
+              window.clearTimeout(ttsTimeoutId);
+              if (ttsAbortRef.current === controller) {
+                ttsAbortRef.current = null;
+              }
+              setTtsLoading(false);
+            }
+          } else {
+            await speakWithBrowser(text);
+          }
         } finally {
-          window.clearTimeout(ttsTimeoutId);
-          if (ttsAbortRef.current === controller) {
-            ttsAbortRef.current = null;
-          }
-          setTtsLoading(false);
-          if (!controller.signal.aborted) {
-            setSpeaking(false);
-          }
+          setSpeaking(false);
         }
-      });
+      };
+
+      if (useGeminiTts()) {
+        return enqueueGeminiClientRequest(runSpeak);
+      }
+      return runSpeak();
     },
     [voiceReplyOn, stopSpeaking, speakWithGemini, speakWithBrowser],
   );

@@ -17,6 +17,8 @@ function newId() {
 }
 
 const TEASER_KEY = "maya-chat-teaser-dismissed";
+const RATE_LIMIT_KEY = "mahi-chat-rate-limit-until";
+const MIN_SEND_GAP_MS = 3500;
 
 export function MayaChatWidget() {
   const [open, setOpen] = useState(false);
@@ -30,6 +32,7 @@ export function MayaChatWidget() {
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const sendingRef = useRef(false);
+  const lastSendAtRef = useRef(0);
 
   const voice = useMayaVoice();
 
@@ -98,7 +101,11 @@ export function MayaChatWidget() {
           52_000,
         );
 
-        let data: { message?: string; error?: string } = {};
+        let data: {
+          message?: string;
+          error?: string;
+          retryAfterSec?: number;
+        } = {};
         try {
           data = (await res.json()) as { message?: string; error?: string };
         } catch {
@@ -110,11 +117,27 @@ export function MayaChatWidget() {
           const errText = data.error ?? MAYA_CHAT.errorMessage;
           setError(errText);
           if (res.status === 429) {
+            try {
+              const retrySec =
+                typeof data === "object" &&
+                data !== null &&
+                "retryAfterSec" in data &&
+                typeof (data as { retryAfterSec?: number }).retryAfterSec ===
+                  "number"
+                  ? (data as { retryAfterSec: number }).retryAfterSec
+                  : 60;
+              localStorage.setItem(
+                RATE_LIMIT_KEY,
+                String(Date.now() + retrySec * 1000),
+              );
+            } catch {
+              /* ignore */
+            }
             window.setTimeout(() => {
               setError((current) =>
                 current === errText ? null : current,
               );
-            }, 8000);
+            }, 12_000);
           }
           return;
         }
@@ -154,6 +177,23 @@ export function MayaChatWidget() {
     async (text: string) => {
       const trimmed = text.trim();
       if (!trimmed || fetching || sendingRef.current) return;
+
+      try {
+        const until = Number(localStorage.getItem(RATE_LIMIT_KEY) || 0);
+        if (until > Date.now()) {
+          setError(MAYA_CHAT.rateLimitMessage);
+          return;
+        }
+      } catch {
+        /* ignore */
+      }
+
+      const sinceLast = Date.now() - lastSendAtRef.current;
+      if (sinceLast < MIN_SEND_GAP_MS) {
+        setError(MAYA_CHAT.rateLimitMessage);
+        return;
+      }
+      lastSendAtRef.current = Date.now();
 
       sendingRef.current = true;
       voice.stopSpeaking();

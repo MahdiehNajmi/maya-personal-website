@@ -28,5 +28,5 @@ export const MAYA_CHAT = {
   errorMessage:
     "Sorry, I could not respond right now. Please try again or email me directly.",
   rateLimitMessage:
-    "I'm getting a lot of requests right now. Please wait a few seconds and try again.",
+    "Mahi is at her API limit for now (too many Gemini requests). Wait about a minute, then try again. Turn off the speaker icon to use text-only and save quota.",
 } as const;

@@ -1,3 +1,4 @@
+import { MAYA_CHAT } from "@/data/maya-ai";
 import {
   generateMayaReply,
   prepareMessagesForGemini,
@@ -7,6 +8,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 export const maxDuration = 60;
+
+const MIN_REQUEST_GAP_MS = 3000;
+let lastChatRequestAt = 0;
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -23,7 +27,7 @@ function errorMessageFor(error: unknown): string {
     return "Chat is not configured on the server. Please try again later.";
   }
   if (/429|RESOURCE_EXHAUSTED|quota/i.test(msg)) {
-    return "I'm getting a lot of requests right now. Please wait a moment and try again.";
+    return MAYA_CHAT.rateLimitMessage;
   }
   if (/abort|timeout|DEADLINE|FUNCTION_INVOCATION_TIMEOUT/i.test(msg)) {
     return "That took too long. Please try again with a shorter question.";
@@ -65,6 +69,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: errorMessageFor(e) }, { status: 400 });
   }
 
+  const now = Date.now();
+  if (now - lastChatRequestAt < MIN_REQUEST_GAP_MS) {
+    return NextResponse.json(
+      { error: MAYA_CHAT.rateLimitMessage, retryAfterSec: 5 },
+      { status: 429 },
+    );
+  }
+  lastChatRequestAt = now;
+
   try {
     const reply = await generateMayaReply(rawMessages);
     return NextResponse.json({ message: reply });
@@ -76,6 +89,12 @@ export async function POST(request: Request) {
     )
       ? 429
       : 502;
-    return NextResponse.json({ error: msg }, { status });
+    return NextResponse.json(
+      {
+        error: msg,
+        ...(status === 429 ? { retryAfterSec: 60 } : {}),
+      },
+      { status },
+    );
   }
 }
