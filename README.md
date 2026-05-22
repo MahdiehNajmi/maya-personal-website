@@ -40,7 +40,17 @@ Open [http://localhost:3000](http://localhost:3000) for the personal site and [h
 
 Copy [`.env.example`](.env.example) to `.env.local` and set values as needed.
 
-**AI chat:** set `GEMINI_API_KEY` in `.env.local` (local) and in Vercel → Environment Variables (production). The key stays server-side only.
+**Never commit real keys.** `.env.local` and `.env.production.local` are gitignored. Only placeholders belong in `.env.example`. See [SECURITY.md](SECURITY.md).
+
+**AI chat:** set `GEMINI_API_KEY` in `.env.local` (local) and in Vercel → Environment Variables (production). It is used only in server routes (`/api/chat`, `/api/tts`) — never prefix secret keys with `NEXT_PUBLIC_`.
+
+Pull production vars locally (optional):
+
+```bash
+vercel env pull .env.production.local --environment=production --yes
+```
+
+Do not push that file to GitHub.
 
 ## Deploy to Vercel (one project)
 

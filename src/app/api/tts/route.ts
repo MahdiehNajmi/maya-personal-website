@@ -11,7 +11,7 @@ type TtsBody = {
 export async function POST(req: Request) {
   if (!process.env.GEMINI_API_KEY?.trim()) {
     return NextResponse.json(
-      { error: "GEMINI_API_KEY is not configured." },
+      { error: "Speech is not configured on the server." },
       { status: 503 },
     );
   }
