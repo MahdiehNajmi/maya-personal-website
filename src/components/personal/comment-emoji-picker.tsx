@@ -7,6 +7,8 @@ import {
 import { PERSONAL } from "@/data/personal";
 import { useCallback, useRef, useState } from "react";
 
+type EmojiCategoryId = (typeof COMMENT_EMOJI_CATEGORIES)[number]["id"];
+
 type Props = {
   disabled?: boolean;
   onInsert: (emoji: string) => void;
@@ -14,7 +16,7 @@ type Props = {
 
 export function CommentEmojiPicker({ disabled, onInsert }: Props) {
   const [open, setOpen] = useState(false);
-  const [activeCategory, setActiveCategory] = useState(
+  const [activeCategory, setActiveCategory] = useState<EmojiCategoryId>(
     COMMENT_EMOJI_CATEGORIES[0].id,
   );
   const panelRef = useRef<HTMLDivElement>(null);
