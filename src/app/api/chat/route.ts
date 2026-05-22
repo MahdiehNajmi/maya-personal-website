@@ -70,9 +70,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: reply });
   } catch (e) {
     console.error("[chat] Gemini error:", e);
-    return NextResponse.json(
-      { error: errorMessageFor(e) },
-      { status: 502 },
-    );
+    const msg = errorMessageFor(e);
+    const status = /429|RESOURCE_EXHAUSTED|quota/i.test(
+      e instanceof Error ? e.message : String(e),
+    )
+      ? 429
+      : 502;
+    return NextResponse.json({ error: msg }, { status });
   }
 }

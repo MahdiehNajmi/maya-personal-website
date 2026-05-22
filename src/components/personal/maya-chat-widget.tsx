@@ -2,6 +2,7 @@
 
 import { MAHI_AVATAR, MAYA_CHAT, MAYA_CHAT_GREETING } from "@/data/maya-ai";
 import { useMayaVoice } from "@/hooks/use-maya-voice";
+import { enqueueGeminiClientRequest } from "@/lib/gemini-api-queue";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -83,15 +84,17 @@ export function MayaChatWidget() {
 
       let reply: string | undefined;
       try {
-        const res = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: history
-              .filter((m) => m.id !== "welcome")
-              .map((m) => ({ role: m.role, content: m.content })),
+        const res = await enqueueGeminiClientRequest(() =>
+          fetch("/api/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: history
+                .filter((m) => m.id !== "welcome")
+                .map((m) => ({ role: m.role, content: m.content })),
+            }),
           }),
-        });
+        );
 
         let data: { message?: string; error?: string } = {};
         try {
@@ -102,7 +105,15 @@ export function MayaChatWidget() {
         }
 
         if (!res.ok) {
-          setError(data.error ?? MAYA_CHAT.errorMessage);
+          const errText = data.error ?? MAYA_CHAT.errorMessage;
+          setError(errText);
+          if (res.status === 429) {
+            window.setTimeout(() => {
+              setError((current) =>
+                current === errText ? null : current,
+              );
+            }, 8000);
+          }
           return;
         }
 
@@ -125,7 +136,7 @@ export function MayaChatWidget() {
       }
 
       if (reply) {
-        void voice.speak(reply);
+        await voice.speak(reply);
       }
     },
     [voice],
@@ -137,6 +148,7 @@ export function MayaChatWidget() {
       if (!trimmed || fetching || sendingRef.current) return;
 
       sendingRef.current = true;
+      voice.stopSpeaking();
       voice.stopListening();
       voice.resetMicState();
       const userMsg: Message = { id: newId(), role: "user", content: trimmed };

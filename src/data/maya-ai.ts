@@ -27,4 +27,6 @@ export const MAYA_CHAT = {
     "Voice is not supported in this browser. You can still type your message.",
   errorMessage:
     "Sorry, I could not respond right now. Please try again or email me directly.",
+  rateLimitMessage:
+    "I'm getting a lot of requests right now. Please wait a few seconds and try again.",
 } as const;

@@ -1,11 +1,18 @@
 import { GoogleGenAI, type GenerateContentResponse } from "@google/genai";
 import { loadPersonaPrompt } from "@/lib/persona";
 import { MAYA_CHAT_GREETING } from "@/data/maya-ai";
+import {
+  isRetryableError,
+  retryDelayMs,
+  sleep,
+} from "@/lib/gemini-retry";
 
 export const GEMINI_MODEL = "gemini-2.5-flash";
 const FALLBACK_MODEL = "gemini-2.0-flash";
-const REQUEST_TIMEOUT_MS = 25_000;
-const MAX_RETRIES = 2;
+const REQUEST_TIMEOUT_MS = 30_000;
+const MAX_RETRIES = 4;
+/** Keep history short to reduce tokens and API load. */
+const MAX_HISTORY_TURNS = 16;
 
 export type ChatMessage = {
   role: "user" | "assistant";
@@ -36,6 +43,10 @@ export function prepareMessagesForGemini(messages: ChatMessage[]): ChatMessage[]
     throw new Error("Invalid conversation: expected a user message to reply to.");
   }
 
+  if (history.length > MAX_HISTORY_TURNS) {
+    return history.slice(-MAX_HISTORY_TURNS);
+  }
+
   return history;
 }
 
@@ -52,19 +63,6 @@ function extractText(response: GenerateContentResponse): string | null {
     .trim();
 
   return combined || null;
-}
-
-function isRetryableError(error: unknown): boolean {
-  const message =
-    error instanceof Error
-      ? error.message
-      : typeof error === "object" && error !== null && "message" in error
-        ? String((error as { message: unknown }).message)
-        : String(error);
-
-  return /429|503|504|UNAVAILABLE|RESOURCE_EXHAUSTED|DEADLINE|timeout|fetch failed/i.test(
-    message,
-  );
 }
 
 async function callGemini(
@@ -113,8 +111,11 @@ async function callWithRetries(
       } catch (error) {
         lastError = error;
         if (!isRetryableError(error) || attempt === MAX_RETRIES) break;
-        await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+        await sleep(retryDelayMs(error, attempt));
       }
+    }
+    if (lastError && isRetryableError(lastError)) {
+      await sleep(retryDelayMs(lastError, 0));
     }
   }
 

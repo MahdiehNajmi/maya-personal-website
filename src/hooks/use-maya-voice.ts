@@ -1,5 +1,6 @@
 "use client";
 
+import { enqueueGeminiClientRequest } from "@/lib/gemini-api-queue";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type SpeechRecognitionCtor = new () => SpeechRecognition;
@@ -86,6 +87,8 @@ export function useMayaVoice() {
   const recognitionRef = useRef<SpeechRecognition | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioUrlRef = useRef<string | null>(null);
+  const ttsAbortRef = useRef<AbortController | null>(null);
+  const [ttsLoading, setTtsLoading] = useState(false);
   const startingRef = useRef(false);
   const onTranscriptRef = useRef<(text: string, isFinal: boolean) => void>(
     () => {},
@@ -135,6 +138,9 @@ export function useMayaVoice() {
   }, []);
 
   const stopSpeaking = useCallback(() => {
+    ttsAbortRef.current?.abort();
+    ttsAbortRef.current = null;
+    setTtsLoading(false);
     speechSynthesis.cancel();
     clearAudioPlayback();
     setSpeaking(false);
@@ -188,11 +194,12 @@ export function useMayaVoice() {
   );
 
   const speakWithGemini = useCallback(
-    async (text: string) => {
+    async (text: string, signal: AbortSignal) => {
       const res = await fetch("/api/tts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
+        signal,
       });
 
       if (!res.ok) {
@@ -200,6 +207,8 @@ export function useMayaVoice() {
       }
 
       const blob = await res.blob();
+      if (signal.aborted) return;
+
       const url = URL.createObjectURL(blob);
       audioUrlRef.current = url;
 
@@ -212,12 +221,21 @@ export function useMayaVoice() {
           resolve();
         }, maxMs);
 
+        const onAbort = () => {
+          window.clearTimeout(timeoutId);
+          clearAudioPlayback();
+          resolve();
+        };
+        signal.addEventListener("abort", onAbort, { once: true });
+
         audio.onended = () => {
+          signal.removeEventListener("abort", onAbort);
           window.clearTimeout(timeoutId);
           clearAudioPlayback();
           resolve();
         };
         audio.onerror = () => {
+          signal.removeEventListener("abort", onAbort);
           window.clearTimeout(timeoutId);
           clearAudioPlayback();
           reject(new Error("Audio playback failed"));
@@ -234,17 +252,30 @@ export function useMayaVoice() {
         return;
       }
 
-      unlockSpeechSynthesis();
-      stopSpeaking();
-      setSpeaking(true);
+      return enqueueGeminiClientRequest(async () => {
+        unlockSpeechSynthesis();
+        stopSpeaking();
 
-      try {
-        await speakWithGemini(text);
-      } catch {
-        await speakWithBrowser(text);
-      } finally {
-        setSpeaking(false);
-      }
+        const controller = new AbortController();
+        ttsAbortRef.current = controller;
+        setTtsLoading(true);
+        setSpeaking(true);
+
+        try {
+          await speakWithGemini(text, controller.signal);
+        } catch (error) {
+          if (controller.signal.aborted) return;
+          await speakWithBrowser(text);
+        } finally {
+          if (ttsAbortRef.current === controller) {
+            ttsAbortRef.current = null;
+          }
+          setTtsLoading(false);
+          if (!controller.signal.aborted) {
+            setSpeaking(false);
+          }
+        }
+      });
     },
     [voiceReplyOn, stopSpeaking, speakWithGemini, speakWithBrowser],
   );
@@ -375,6 +406,8 @@ export function useMayaVoice() {
     speechSupported: micSupported || ttsSupported,
     listening,
     speaking,
+    ttsLoading,
+    voiceBusy: speaking || ttsLoading,
     voiceReplyOn,
     setVoiceReplyOn,
     voiceHint,

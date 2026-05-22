@@ -4,9 +4,17 @@ import {
   type MahiTtsVoiceId,
   MAHI_TTS_VOICES,
 } from "@/data/mahi-voices";
+import {
+  isRetryableError,
+  retryDelayMs,
+  sleep,
+} from "@/lib/gemini-retry";
 
 export const GEMINI_TTS_MODEL = "gemini-2.5-flash-preview-tts";
 const FALLBACK_TTS_MODEL = "gemini-2.5-pro-preview-tts";
+const TTS_MAX_RETRIES = 3;
+/** Shorter spoken replies use less TTS quota and finish faster. */
+const TTS_MAX_CHARS = 1200;
 
 const SAMPLE_RATE = 24_000;
 const CHANNELS = 1;
@@ -86,19 +94,27 @@ export async function generateMahiSpeech(
   if (!trimmed) {
     throw new Error("Text is required for speech synthesis.");
   }
-  if (trimmed.length > 4000) {
-    throw new Error("Reply is too long to speak aloud. Try a shorter message.");
-  }
+  const toSpeak =
+    trimmed.length > TTS_MAX_CHARS
+      ? `${trimmed.slice(0, TTS_MAX_CHARS).trimEnd()}…`
+      : trimmed;
 
   const voiceName = resolveMahiVoiceId(voiceId);
   const models = [GEMINI_TTS_MODEL, FALLBACK_TTS_MODEL];
   let lastError: unknown;
 
   for (const model of models) {
-    try {
-      return await callTts(model, trimmed, voiceName);
-    } catch (error) {
-      lastError = error;
+    for (let attempt = 0; attempt <= TTS_MAX_RETRIES; attempt++) {
+      try {
+        return await callTts(model, toSpeak, voiceName);
+      } catch (error) {
+        lastError = error;
+        if (!isRetryableError(error) || attempt === TTS_MAX_RETRIES) break;
+        await sleep(retryDelayMs(error, attempt));
+      }
+    }
+    if (lastError && isRetryableError(lastError)) {
+      await sleep(retryDelayMs(lastError, 0));
     }
   }
 
