@@ -44,14 +44,7 @@ export function MayaChatWidget() {
     if (open) inputRef.current?.focus();
   }, [open]);
 
-  const send = async () => {
-    const text = input.trim();
-    if (!text || loading) return;
-
-    const userMsg: Message = { id: newId(), role: "user", content: text };
-    const nextMessages = [...messages, userMsg];
-    setMessages(nextMessages);
-    setInput("");
+  const requestReply = async (history: Message[]) => {
     setError(null);
     setLoading(true);
 
@@ -60,34 +53,67 @@ export function MayaChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: nextMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
+          messages: history
+            .filter((m) => m.id !== "welcome")
+            .map((m) => ({
+              role: m.role,
+              content: m.content,
+            })),
         }),
       });
 
-      const data = (await res.json()) as {
-        message?: string;
-        error?: string;
-      };
+      let data: { message?: string; error?: string } = {};
+      try {
+        data = (await res.json()) as { message?: string; error?: string };
+      } catch {
+        setError(MAYA_CHAT.errorMessage);
+        return;
+      }
 
       if (!res.ok) {
         setError(data.error ?? MAYA_CHAT.errorMessage);
         return;
       }
 
-      if (data.message) {
+      if (data.message?.trim()) {
         setMessages((prev) => [
           ...prev,
-          { id: newId(), role: "assistant", content: data.message! },
+          {
+            id: newId(),
+            role: "assistant",
+            content: data.message!.trim(),
+          },
         ]);
+      } else {
+        setError(MAYA_CHAT.errorMessage);
       }
     } catch {
       setError(MAYA_CHAT.errorMessage);
     } finally {
       setLoading(false);
     }
+  };
+
+  const send = async () => {
+    const text = input.trim();
+    if (!text || loading) return;
+
+    const userMsg: Message = { id: newId(), role: "user", content: text };
+    const nextMessages = [...messages, userMsg];
+    setMessages(nextMessages);
+    setInput("");
+    await requestReply(nextMessages);
+  };
+
+  const retryLast = () => {
+    if (loading) return;
+    const lastUserIndex = [...messages]
+      .map((m, i) => (m.role === "user" ? i : -1))
+      .filter((i) => i >= 0)
+      .pop();
+    if (lastUserIndex === undefined) return;
+    const history = messages.slice(0, lastUserIndex + 1);
+    void requestReply(history);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -152,9 +178,16 @@ export function MayaChatWidget() {
           </div>
 
           {error ? (
-            <p className="maya-chat__error" role="alert">
-              {error}
-            </p>
+            <div className="maya-chat__error-wrap" role="alert">
+              <p className="maya-chat__error">{error}</p>
+              <button
+                type="button"
+                className="maya-chat__retry"
+                onClick={retryLast}
+              >
+                {MAYA_CHAT.retryLabel}
+              </button>
+            </div>
           ) : null}
 
           <footer className="maya-chat__footer">

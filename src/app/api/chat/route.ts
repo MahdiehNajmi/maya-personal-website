@@ -1,6 +1,12 @@
-import { generateMayaReply, type ChatMessage } from "@/lib/gemini";
+import {
+  generateMayaReply,
+  prepareMessagesForGemini,
+  type ChatMessage,
+} from "@/lib/gemini";
 import { NextResponse } from "next/server";
 import { z } from "zod";
+
+export const maxDuration = 60;
 
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
@@ -10,6 +16,23 @@ const messageSchema = z.object({
 const chatSchema = z.object({
   messages: z.array(messageSchema).min(1).max(40),
 });
+
+function errorMessageFor(error: unknown): string {
+  const msg = error instanceof Error ? error.message : String(error);
+  if (/GEMINI_API_KEY|not configured/i.test(msg)) {
+    return "Chat is not configured on the server. Please try again later.";
+  }
+  if (/429|RESOURCE_EXHAUSTED|quota/i.test(msg)) {
+    return "I'm getting a lot of requests right now. Please wait a moment and try again.";
+  }
+  if (/abort|timeout|DEADLINE/i.test(msg)) {
+    return "That took too long. Please try a shorter question.";
+  }
+  if (/Invalid conversation/i.test(msg)) {
+    return "Something went wrong with the chat history. Refresh the page and try again.";
+  }
+  return "Could not generate a response. Please try again.";
+}
 
 export async function POST(request: Request) {
   if (!process.env.GEMINI_API_KEY?.trim()) {
@@ -34,15 +57,21 @@ export async function POST(request: Request) {
     );
   }
 
-  const messages = parsed.data.messages as ChatMessage[];
+  const rawMessages = parsed.data.messages as ChatMessage[];
 
   try {
-    const reply = await generateMayaReply(messages);
+    prepareMessagesForGemini(rawMessages);
+  } catch (e) {
+    return NextResponse.json({ error: errorMessageFor(e) }, { status: 400 });
+  }
+
+  try {
+    const reply = await generateMayaReply(rawMessages);
     return NextResponse.json({ message: reply });
   } catch (e) {
     console.error("[chat] Gemini error:", e);
     return NextResponse.json(
-      { error: "Could not generate a response. Please try again." },
+      { error: errorMessageFor(e) },
       { status: 502 },
     );
   }

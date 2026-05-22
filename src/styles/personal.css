@@ -1711,10 +1711,33 @@ h1 {
   }
 }
 
-.maya-chat__error {
+.maya-chat__error-wrap {
   margin: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  align-items: flex-start;
+}
+
+.maya-chat__error {
+  margin: 0;
   font-size: 0.78rem;
   color: #dc2626;
+}
+
+.maya-chat__retry {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--link);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.maya-chat__retry:hover {
+  background: rgba(148, 163, 184, 0.12);
 }
 
 .maya-chat__footer {
