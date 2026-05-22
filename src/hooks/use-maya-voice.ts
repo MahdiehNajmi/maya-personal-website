@@ -84,6 +84,8 @@ export function useMayaVoice() {
   const [voiceReplyOn, setVoiceReplyOn] = useState(true);
   const [voiceHint, setVoiceHint] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
   const startingRef = useRef(false);
   const onTranscriptRef = useRef<(text: string, isFinal: boolean) => void>(
     () => {},
@@ -120,26 +122,31 @@ export function useMayaVoice() {
     recognitionRef.current = null;
   }, []);
 
-  const stopSpeaking = useCallback(() => {
-    speechSynthesis.cancel();
-    setSpeaking(false);
+  const clearAudioPlayback = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.src = "";
+      audioRef.current = null;
+    }
+    if (audioUrlRef.current) {
+      URL.revokeObjectURL(audioUrlRef.current);
+      audioUrlRef.current = null;
+    }
   }, []);
 
-  const speak = useCallback(
-    (text: string) => {
-      if (!voiceReplyOn || !text.trim() || typeof window === "undefined") {
-        return Promise.resolve();
-      }
+  const stopSpeaking = useCallback(() => {
+    speechSynthesis.cancel();
+    clearAudioPlayback();
+    setSpeaking(false);
+  }, [clearAudioPlayback]);
 
-      unlockSpeechSynthesis();
-      stopSpeaking();
-
-      return new Promise<void>((resolve) => {
+  const speakWithBrowser = useCallback(
+    (text: string) =>
+      new Promise<void>((resolve) => {
         let settled = false;
         const finish = () => {
           if (settled) return;
           settled = true;
-          setSpeaking(false);
           resolve();
         };
 
@@ -161,13 +168,10 @@ export function useMayaVoice() {
             finish();
           };
 
-          utterance.onstart = () => setSpeaking(true);
           utterance.onend = done;
           utterance.onerror = done;
-
           speechSynthesis.speak(utterance);
 
-          // Safari/Chrome sometimes skip onend; poll as a fallback.
           pollId = window.setInterval(() => {
             if (!speechSynthesis.speaking && !speechSynthesis.pending) {
               done();
@@ -179,9 +183,70 @@ export function useMayaVoice() {
           speechSynthesis.cancel();
         }
         window.setTimeout(run, synthesisUnlocked ? 0 : 50);
+      }),
+    [],
+  );
+
+  const speakWithGemini = useCallback(
+    async (text: string) => {
+      const res = await fetch("/api/tts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Gemini TTS failed");
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      audioUrlRef.current = url;
+
+      await new Promise<void>((resolve, reject) => {
+        const audio = new Audio(url);
+        audioRef.current = audio;
+        const maxMs = Math.min(120_000, text.length * 100 + 5000);
+        const timeoutId = window.setTimeout(() => {
+          clearAudioPlayback();
+          resolve();
+        }, maxMs);
+
+        audio.onended = () => {
+          window.clearTimeout(timeoutId);
+          clearAudioPlayback();
+          resolve();
+        };
+        audio.onerror = () => {
+          window.clearTimeout(timeoutId);
+          clearAudioPlayback();
+          reject(new Error("Audio playback failed"));
+        };
+        void audio.play().catch(reject);
       });
     },
-    [voiceReplyOn, stopSpeaking],
+    [clearAudioPlayback],
+  );
+
+  const speak = useCallback(
+    async (text: string) => {
+      if (!voiceReplyOn || !text.trim() || typeof window === "undefined") {
+        return;
+      }
+
+      unlockSpeechSynthesis();
+      stopSpeaking();
+      setSpeaking(true);
+
+      try {
+        await speakWithGemini(text);
+      } catch {
+        await speakWithBrowser(text);
+      } finally {
+        setSpeaking(false);
+      }
+    },
+    [voiceReplyOn, stopSpeaking, speakWithGemini, speakWithBrowser],
   );
 
   const stopListening = useCallback(() => {

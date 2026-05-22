@@ -1,6 +1,6 @@
 "use client";
 
-import { MAYA_CHAT, MAYA_CHAT_GREETING } from "@/data/maya-ai";
+import { MAHI_AVATAR, MAYA_CHAT, MAYA_CHAT_GREETING } from "@/data/maya-ai";
 import { useMayaVoice } from "@/hooks/use-maya-voice";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -217,7 +217,7 @@ export function MayaChatWidget() {
           <header className="maya-chat__header">
             <div className="maya-chat__avatar-wrap">
               <Image
-                src="/images/profile.png"
+                src={MAHI_AVATAR}
                 alt=""
                 width={44}
                 height={44}
@@ -385,7 +385,7 @@ export function MayaChatWidget() {
           aria-label={open ? MAYA_CHAT.closeLabel : MAYA_CHAT.openLabel}
         >
           <Image
-            src="/images/profile.png"
+            src={MAHI_AVATAR}
             alt=""
             width={36}
             height={36}

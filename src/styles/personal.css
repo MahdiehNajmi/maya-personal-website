@@ -1653,6 +1653,7 @@ h1 {
   height: 2.25rem;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center 18%;
   border: 2px solid rgba(255, 255, 255, 0.85);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
@@ -1743,6 +1744,7 @@ h1 {
   height: 2.75rem;
   border-radius: 50%;
   object-fit: cover;
+  object-position: center 18%;
   border: 2px solid rgba(255, 255, 255, 0.9);
   box-shadow: 0 4px 14px rgba(91, 108, 250, 0.35);
 }

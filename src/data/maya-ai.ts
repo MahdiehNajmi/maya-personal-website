@@ -1,10 +1,14 @@
+import { MAHI_AVATAR } from "@/data/mahi-voices";
+
+export { MAHI_AVATAR };
+
 /** Greeting shown in the chat widget (Mahi's voice). */
 export const MAYA_CHAT_GREETING =
   "Hi, I'm Mahi. Feel free to ask me any questions about the website, or send me your feedback here.";
 
 export const MAYA_CHAT = {
   title: "Mahi",
-  subtitle: "AI clone · voice & text",
+  subtitle: "AI clone · natural voice & text",
   teaser: "Ask me anything — tap to talk or type",
   launcherLabel: "Talk to Mahi",
   placeholder: "Type or use the mic to speak…",
