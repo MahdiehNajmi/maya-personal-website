@@ -1,6 +1,7 @@
 "use client";
 
 import { PERSONAL } from "@/data/personal";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 
 function initDockMagnification() {
@@ -143,7 +144,11 @@ export function ThemeToggle() {
 }
 
 export function TypingHero() {
+  const pathname = usePathname();
+
   useEffect(() => {
+    if (pathname !== "/") return;
+
     const TYPING_TEXT = PERSONAL.typingText;
     const TYPE_MS = 100;
     const DELETE_MS = Math.max(35, Math.floor(TYPE_MS / 2));
@@ -254,8 +259,12 @@ export function TypingHero() {
       clearTimer();
       document.removeEventListener("visibilitychange", onVisibility);
       observer.disconnect();
+      output.textContent = "";
+      hiIcon.classList.remove("is-visible");
+      hiIcon.setAttribute("aria-hidden", "true");
+      cursor.classList.remove("is-done");
     };
-  }, []);
+  }, [pathname]);
 
   return null;
 }
