@@ -24,10 +24,11 @@ export function MayaChatWidget() {
     { id: "welcome", role: "assistant", content: MAYA_CHAT_GREETING },
   ]);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const sendingRef = useRef(false);
 
   const voice = useMayaVoice();
 
@@ -76,9 +77,11 @@ export function MayaChatWidget() {
   const requestReply = useCallback(
     async (history: Message[]) => {
       setError(null);
-      setLoading(true);
+      setFetching(true);
       voice.stopSpeaking();
+      voice.resetMicState();
 
+      let reply: string | undefined;
       try {
         const res = await fetch("/api/chat", {
           method: "POST",
@@ -103,20 +106,26 @@ export function MayaChatWidget() {
           return;
         }
 
-        const reply = data.message?.trim();
-        if (reply) {
+        const text = data.message?.trim();
+        if (text) {
+          reply = text;
           setMessages((prev) => [
             ...prev,
-            { id: newId(), role: "assistant", content: reply },
+            { id: newId(), role: "assistant", content: text },
           ]);
-          await voice.speak(reply);
         } else {
           setError(MAYA_CHAT.errorMessage);
         }
       } catch {
         setError(MAYA_CHAT.errorMessage);
       } finally {
-        setLoading(false);
+        setFetching(false);
+        sendingRef.current = false;
+        voice.resetMicState();
+      }
+
+      if (reply) {
+        void voice.speak(reply);
       }
     },
     [voice],
@@ -125,22 +134,24 @@ export function MayaChatWidget() {
   const sendText = useCallback(
     async (text: string) => {
       const trimmed = text.trim();
-      if (!trimmed || loading) return;
+      if (!trimmed || fetching || sendingRef.current) return;
 
+      sendingRef.current = true;
       voice.stopListening();
+      voice.resetMicState();
       const userMsg: Message = { id: newId(), role: "user", content: trimmed };
       const nextMessages = [...messages, userMsg];
       setMessages(nextMessages);
       setInput("");
       await requestReply(nextMessages);
     },
-    [loading, messages, requestReply, voice],
+    [fetching, messages, requestReply, voice],
   );
 
   const send = () => void sendText(input);
 
   const retryLast = () => {
-    if (loading) return;
+    if (fetching) return;
     const lastUserIndex = [...messages]
       .map((m, i) => (m.role === "user" ? i : -1))
       .filter((i) => i >= 0)
@@ -151,10 +162,14 @@ export function MayaChatWidget() {
 
   const onMicTranscript = useCallback(
     (text: string, isFinal: boolean) => {
+      if (fetching || sendingRef.current) return;
       setInput(text);
-      if (isFinal && text.trim()) void sendText(text);
+      if (isFinal && text.trim()) {
+        voice.stopListening();
+        void sendText(text);
+      }
     },
-    [sendText],
+    [fetching, sendText, voice],
   );
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -164,7 +179,7 @@ export function MayaChatWidget() {
     }
   };
 
-  const statusLabel = loading
+  const statusLabel = fetching
     ? MAYA_CHAT.thinkingLabel
     : voice.listening
       ? MAYA_CHAT.listeningLabel
@@ -236,7 +251,7 @@ export function MayaChatWidget() {
                 {m.content}
               </div>
             ))}
-            {loading ? (
+            {fetching ? (
               <div
                 className="maya-chat__bubble maya-chat__bubble--assistant maya-chat__typing"
                 aria-live="polite"
@@ -283,11 +298,13 @@ export function MayaChatWidget() {
                         voice.unlock();
                         voice.toggleListening(onMicTranscript);
                       }}
-                      disabled={loading}
+                      disabled={fetching}
                       aria-label={
                         voice.listening
                           ? MAYA_CHAT.micStopLabel
-                          : MAYA_CHAT.micLabel
+                          : voice.speaking
+                            ? "Stop speaking"
+                            : MAYA_CHAT.micLabel
                       }
                       title={MAYA_CHAT.micLabel}
                     >
@@ -341,14 +358,14 @@ export function MayaChatWidget() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={onKeyDown}
                 placeholder={MAYA_CHAT.placeholder}
-                disabled={loading}
+                disabled={fetching}
                 aria-label={MAYA_CHAT.placeholder}
               />
               <button
                 type="button"
                 className="maya-chat__send"
                 onClick={() => void send()}
-                disabled={loading || !input.trim()}
+                disabled={fetching || !input.trim()}
               >
                 <SendIcon />
                 <span>{MAYA_CHAT.sendLabel}</span>

@@ -108,6 +108,18 @@ export function useMayaVoice() {
     };
   }, []);
 
+  const resetMicState = useCallback(() => {
+    startingRef.current = false;
+    setListening(false);
+    setVoiceHint(null);
+    try {
+      recognitionRef.current?.abort();
+    } catch {
+      /* ignore */
+    }
+    recognitionRef.current = null;
+  }, []);
+
   const stopSpeaking = useCallback(() => {
     speechSynthesis.cancel();
     setSpeaking(false);
@@ -123,6 +135,18 @@ export function useMayaVoice() {
       stopSpeaking();
 
       return new Promise<void>((resolve) => {
+        let settled = false;
+        const finish = () => {
+          if (settled) return;
+          settled = true;
+          setSpeaking(false);
+          resolve();
+        };
+
+        const maxMs = Math.min(120_000, text.length * 90 + 4000);
+        const timeoutId = window.setTimeout(finish, maxMs);
+
+        let pollId = 0;
         const run = () => {
           const utterance = new SpeechSynthesisUtterance(text);
           const voice = pickVoice();
@@ -131,20 +155,26 @@ export function useMayaVoice() {
           utterance.pitch = 1.02;
           utterance.volume = 1;
 
+          const done = () => {
+            if (pollId) window.clearInterval(pollId);
+            window.clearTimeout(timeoutId);
+            finish();
+          };
+
           utterance.onstart = () => setSpeaking(true);
-          utterance.onend = () => {
-            setSpeaking(false);
-            resolve();
-          };
-          utterance.onerror = () => {
-            setSpeaking(false);
-            resolve();
-          };
+          utterance.onend = done;
+          utterance.onerror = done;
 
           speechSynthesis.speak(utterance);
+
+          // Safari/Chrome sometimes skip onend; poll as a fallback.
+          pollId = window.setInterval(() => {
+            if (!speechSynthesis.speaking && !speechSynthesis.pending) {
+              done();
+            }
+          }, 400);
         };
 
-        // After async API replies, Safari may need a short delay post-unlock.
         if (speechSynthesis.pending || speechSynthesis.speaking) {
           speechSynthesis.cancel();
         }
@@ -160,9 +190,8 @@ export function useMayaVoice() {
     } catch {
       /* ignore */
     }
-    startingRef.current = false;
-    setListening(false);
-  }, []);
+    resetMicState();
+  }, [resetMicState]);
 
   const startListening = useCallback(
     async (onTranscript: (text: string, isFinal: boolean) => void) => {
@@ -175,6 +204,8 @@ export function useMayaVoice() {
       }
 
       if (startingRef.current || listening) return false;
+
+      if (speaking) stopSpeaking();
 
       unlockSpeechSynthesis();
       setVoiceHint(null);
@@ -240,25 +271,37 @@ export function useMayaVoice() {
 
       try {
         recognition.start();
+        window.setTimeout(() => {
+          if (startingRef.current && !listening) {
+            resetMicState();
+            setVoiceHint(
+              "Could not start listening. Tap the mic again.",
+            );
+          }
+        }, 8000);
         return true;
       } catch {
-        startingRef.current = false;
+        resetMicState();
         setVoiceHint("Could not start listening. Wait a moment and tap the mic again.");
         return false;
       }
     },
-    [listening, stopSpeaking],
+    [listening, speaking, resetMicState, stopSpeaking],
   );
 
   const toggleListening = useCallback(
     (onTranscript: (text: string, isFinal: boolean) => void) => {
+      if (speaking) {
+        stopSpeaking();
+        return;
+      }
       if (listening || startingRef.current) {
         stopListening();
         return;
       }
       void startListening(onTranscript);
     },
-    [listening, startListening, stopListening],
+    [listening, speaking, startListening, stopListening, stopSpeaking],
   );
 
   return {
@@ -276,6 +319,7 @@ export function useMayaVoice() {
     startListening,
     stopListening,
     toggleListening,
+    resetMicState,
     unlock: unlockSpeechSynthesis,
   };
 };

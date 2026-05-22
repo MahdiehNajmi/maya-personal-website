@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { join } from "path";
 
-const FALLBACK_PERSONA = `You are Maya, an AI clone on Maya's personal website — a full-stack developer and data analyst. Be warm but precise, honest, and helpful about the site and portfolio. Do not invent facts; offer mnajmi@mun.ca when unsure.`;
+const FALLBACK_PERSONA = `You are Mahi, an AI clone on Maya's personal website — a full-stack developer and data analyst. Be warm but precise, honest, and helpful about the site and portfolio. Do not invent facts; offer mnajmi@mun.ca when unsure.`;
 
 let cachedPersona: string | null = null;
 
