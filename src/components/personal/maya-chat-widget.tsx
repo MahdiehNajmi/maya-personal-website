@@ -2,7 +2,7 @@
 
 import { MAHI_AVATAR, MAYA_CHAT, MAYA_CHAT_GREETING } from "@/data/maya-ai";
 import { useMayaVoice } from "@/hooks/use-maya-voice";
-import { enqueueGeminiClientRequest } from "@/lib/gemini-api-queue";
+import { fetchWithTimeout } from "@/lib/fetch-with-timeout";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -84,8 +84,9 @@ export function MayaChatWidget() {
 
       let reply: string | undefined;
       try {
-        const res = await enqueueGeminiClientRequest(() =>
-          fetch("/api/chat", {
+        const res = await fetchWithTimeout(
+          "/api/chat",
+          {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -93,7 +94,8 @@ export function MayaChatWidget() {
                 .filter((m) => m.id !== "welcome")
                 .map((m) => ({ role: m.role, content: m.content })),
             }),
-          }),
+          },
+          52_000,
         );
 
         let data: { message?: string; error?: string } = {};
@@ -127,8 +129,14 @@ export function MayaChatWidget() {
         } else {
           setError(MAYA_CHAT.errorMessage);
         }
-      } catch {
-        setError(MAYA_CHAT.errorMessage);
+      } catch (err) {
+        const aborted =
+          err instanceof Error && /abort/i.test(err.name + err.message);
+        setError(
+          aborted
+            ? "That took too long. Please try again with a shorter question."
+            : MAYA_CHAT.errorMessage,
+        );
       } finally {
         setFetching(false);
         sendingRef.current = false;
@@ -136,7 +144,7 @@ export function MayaChatWidget() {
       }
 
       if (reply) {
-        await voice.speak(reply);
+        void voice.speak(reply);
       }
     },
     [voice],

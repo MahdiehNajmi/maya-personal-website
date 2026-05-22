@@ -25,8 +25,8 @@ function errorMessageFor(error: unknown): string {
   if (/429|RESOURCE_EXHAUSTED|quota/i.test(msg)) {
     return "I'm getting a lot of requests right now. Please wait a moment and try again.";
   }
-  if (/abort|timeout|DEADLINE/i.test(msg)) {
-    return "That took too long. Please try a shorter question.";
+  if (/abort|timeout|DEADLINE|FUNCTION_INVOCATION_TIMEOUT/i.test(msg)) {
+    return "That took too long. Please try again with a shorter question.";
   }
   if (/Invalid conversation/i.test(msg)) {
     return "Something went wrong with the chat history. Refresh the page and try again.";

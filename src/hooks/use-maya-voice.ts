@@ -258,6 +258,7 @@ export function useMayaVoice() {
 
         const controller = new AbortController();
         ttsAbortRef.current = controller;
+        const ttsTimeoutId = window.setTimeout(() => controller.abort(), 28_000);
         setTtsLoading(true);
         setSpeaking(true);
 
@@ -267,6 +268,7 @@ export function useMayaVoice() {
           if (controller.signal.aborted) return;
           await speakWithBrowser(text);
         } finally {
+          window.clearTimeout(ttsTimeoutId);
           if (ttsAbortRef.current === controller) {
             ttsAbortRef.current = null;
           }

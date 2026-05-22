@@ -2,6 +2,7 @@ import { GoogleGenAI, type GenerateContentResponse } from "@google/genai";
 import { loadPersonaPrompt } from "@/lib/persona";
 import { MAYA_CHAT_GREETING } from "@/data/maya-ai";
 import {
+  isRateLimitError,
   isRetryableError,
   retryDelayMs,
   sleep,
@@ -9,8 +10,10 @@ import {
 
 export const GEMINI_MODEL = "gemini-2.5-flash";
 const FALLBACK_MODEL = "gemini-2.0-flash";
-const REQUEST_TIMEOUT_MS = 30_000;
-const MAX_RETRIES = 4;
+const REQUEST_TIMEOUT_MS = 22_000;
+/** Stay under Vercel 60s limit (chat route maxDuration). */
+const SERVER_BUDGET_MS = 48_000;
+const MAX_RETRIES_PER_MODEL = 1;
 /** Keep history short to reduce tokens and API load. */
 const MAX_HISTORY_TURNS = 16;
 
@@ -102,20 +105,27 @@ async function callWithRetries(
   systemInstruction: string,
 ): Promise<string> {
   const models = [GEMINI_MODEL, FALLBACK_MODEL];
+  const deadline = Date.now() + SERVER_BUDGET_MS;
   let lastError: unknown;
 
   for (const model of models) {
-    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    for (let attempt = 0; attempt <= MAX_RETRIES_PER_MODEL; attempt++) {
+      if (Date.now() >= deadline) break;
+
       try {
         return await callGemini(model, contents, systemInstruction);
       } catch (error) {
         lastError = error;
-        if (!isRetryableError(error) || attempt === MAX_RETRIES) break;
-        await sleep(retryDelayMs(error, attempt));
+        if (isRateLimitError(error)) throw error;
+        if (!isRetryableError(error) || attempt === MAX_RETRIES_PER_MODEL) {
+          break;
+        }
+        const wait = Math.min(
+          retryDelayMs(error, attempt),
+          deadline - Date.now() - 500,
+        );
+        if (wait > 0) await sleep(wait);
       }
-    }
-    if (lastError && isRetryableError(lastError)) {
-      await sleep(retryDelayMs(lastError, 0));
     }
   }
 
