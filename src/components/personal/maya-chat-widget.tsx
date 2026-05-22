@@ -63,6 +63,7 @@ export function MayaChatWidget() {
 
   const openChat = () => {
     dismissTeaser();
+    voice.unlock();
     setOpen(true);
   };
 
@@ -272,35 +273,51 @@ export function MayaChatWidget() {
 
           <footer className="maya-chat__footer">
             <div className="maya-chat__toolbar">
-              {voice.speechSupported ? (
+              {voice.micSupported || voice.ttsSupported ? (
                 <>
-                  <button
-                    type="button"
-                    className={`maya-chat__mic ${voice.listening ? "maya-chat__mic--active" : ""}`}
-                    onClick={() => voice.toggleListening(onMicTranscript)}
-                    disabled={loading}
-                    aria-label={
-                      voice.listening
-                        ? MAYA_CHAT.micStopLabel
-                        : MAYA_CHAT.micLabel
-                    }
-                    title={MAYA_CHAT.micLabel}
-                  >
-                    <MicIcon />
-                  </button>
-                  <button
-                    type="button"
-                    className={`maya-chat__voice-toggle ${voice.voiceReplyOn ? "is-on" : ""}`}
-                    onClick={() => voice.setVoiceReplyOn((v) => !v)}
-                    aria-pressed={voice.voiceReplyOn}
-                    title={
-                      voice.voiceReplyOn
-                        ? MAYA_CHAT.voiceOnLabel
-                        : MAYA_CHAT.voiceOffLabel
-                    }
-                  >
-                    {voice.voiceReplyOn ? <SpeakerOnIcon /> : <SpeakerOffIcon />}
-                  </button>
+                  {voice.micSupported ? (
+                    <button
+                      type="button"
+                      className={`maya-chat__mic ${voice.listening ? "maya-chat__mic--active" : ""}`}
+                      onClick={() => {
+                        voice.unlock();
+                        voice.toggleListening(onMicTranscript);
+                      }}
+                      disabled={loading}
+                      aria-label={
+                        voice.listening
+                          ? MAYA_CHAT.micStopLabel
+                          : MAYA_CHAT.micLabel
+                      }
+                      title={MAYA_CHAT.micLabel}
+                    >
+                      <MicIcon />
+                    </button>
+                  ) : null}
+                  {voice.ttsSupported ? (
+                    <button
+                      type="button"
+                      className={`maya-chat__voice-toggle ${voice.voiceReplyOn ? "is-on" : ""}`}
+                      onClick={() => voice.setVoiceReplyOn((v) => !v)}
+                      aria-pressed={voice.voiceReplyOn}
+                      title={
+                        voice.voiceReplyOn
+                          ? MAYA_CHAT.voiceOnLabel
+                          : MAYA_CHAT.voiceOffLabel
+                      }
+                    >
+                      {voice.voiceReplyOn ? (
+                        <SpeakerOnIcon />
+                      ) : (
+                        <SpeakerOffIcon />
+                      )}
+                    </button>
+                  ) : null}
+                  {!voice.micSupported ? (
+                    <p className="maya-chat__speech-hint">
+                      {MAYA_CHAT.speechUnsupported}
+                    </p>
+                  ) : null}
                 </>
               ) : (
                 <p className="maya-chat__speech-hint">
@@ -308,6 +325,12 @@ export function MayaChatWidget() {
                 </p>
               )}
             </div>
+
+            {voice.voiceHint ? (
+              <p className="maya-chat__voice-hint" role="status">
+                {voice.voiceHint}
+              </p>
+            ) : null}
 
             <div className="maya-chat__composer">
               <textarea
@@ -355,11 +378,26 @@ export function MayaChatWidget() {
             {MAYA_CHAT.launcherLabel}
           </span>
           <span className="maya-chat__launcher-badge" aria-hidden="true">
-            AI
+            <SparklesIcon />
           </span>
         </button>
       </div>
     </div>
+  );
+}
+
+function SparklesIcon() {
+  return (
+    <svg
+      className="maya-chat__sparkles-icon"
+      viewBox="0 0 24 24"
+      width="14"
+      height="14"
+      aria-hidden="true"
+      fill="currentColor"
+    >
+      <path d="M12 2l1.2 4.2L17.4 7.4l-4.2 1.2L12 12.8 10.8 8.6 6.6 7.4l4.2-1.2L12 2zM5 14l.7 2.4L8.1 17l-2.4.7L5 20.1l-.7-2.4L2 17l2.4-.7L5 14zm14 0l.7 2.4 2.4.7-2.4.7-.7 2.4-.7-2.4-2.4-.7 2.4-.7.7-2.4zM12 16.5l.9 3.1 3.1.9-3.1.9-.9 3.1-.9-3.1-3.1-.9 3.1-.9.9-3.1z" />
+    </svg>
   );
 }
 
