@@ -1,5 +1,6 @@
 import { PERSONAL } from "@/data/personal";
 import Image from "next/image";
+import Link from "next/link";
 
 function JourneyParagraph({
   text,
@@ -59,6 +60,11 @@ export default function PersonalHomePage() {
               </span>
             </h1>
             <p className="intro">{PERSONAL.intro}</p>
+            <p className="hero-actions">
+              <Link className="rb-btn rb-btn--default" href="/comments">
+                {PERSONAL.comments.linkLabel}
+              </Link>
+            </p>
           </div>
         </div>
       </section>
@@ -95,9 +101,14 @@ export default function PersonalHomePage() {
       <section id="feedback" className="section" aria-labelledby="feedback-heading">
         <h2 id="feedback-heading">{PERSONAL.feedback.heading}</h2>
         <p className="section-lead">{PERSONAL.feedback.lead}</p>
-        <a className="rb-btn rb-btn--default" href={feedbackMailto}>
-          {PERSONAL.feedback.buttonLabel}
-        </a>
+        <div className="section-actions">
+          <Link className="rb-btn rb-btn--default" href="/comments">
+            {PERSONAL.comments.linkLabel}
+          </Link>
+          <a className="rb-btn rb-btn--outline" href={feedbackMailto}>
+            {PERSONAL.feedback.buttonLabel}
+          </a>
+        </div>
       </section>
     </main>
   );

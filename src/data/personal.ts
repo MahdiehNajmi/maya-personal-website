@@ -44,4 +44,26 @@ export const PERSONAL = {
     buttonLabel: "Send feedback by email",
     mailSubject: "Website feedback",
   },
+  comments: {
+    linkLabel: "Leave a comment",
+    pageTitle: "Visitor comments",
+    pageLead:
+      "Share a comment, idea, or reaction about this site. Your message is saved here so others can read it too.",
+    backLabel: "Back to home",
+    formHeading: "Write a comment",
+    nameLabel: "Your name",
+    namePlaceholder: "How should we show your name?",
+    messageLabel: "Your comment or idea",
+    messagePlaceholder:
+      "What did you like, what would you improve, or any idea you want to share…",
+    submitLabel: "Post comment",
+    submittingLabel: "Posting…",
+    submitError: "Could not post your comment. Please try again.",
+    successMessage: "Thank you — your comment was posted.",
+    listHeading: "All comments",
+    emptyMessage: "No comments yet. Be the first to leave one.",
+    emojiToggleLabel: "Open emoji picker",
+    emojiQuickLabel: "Quick emojis",
+    emojiPanelLabel: "Choose an emoji",
+  },
 } as const;

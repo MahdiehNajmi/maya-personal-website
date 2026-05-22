@@ -21,6 +21,8 @@ One [Next.js](https://nextjs.org) deployment with:
 | `/portfolio/lets-discuss` | Contact form |
 | `/api/contact` | Contact API (Resend or mailto fallback) |
 | `/api/chat` | Maya AI chat (Gemini 2.5 Flash) |
+| `/comments` | Visitor comments (Neon + Drizzle) |
+| `/api/comments` | Comments API (GET list, POST new) |
 
 ## Local development
 
@@ -51,6 +53,13 @@ vercel env pull .env.production.local --environment=production --yes
 ```
 
 Do not push that file to GitHub.
+
+**Comments database:** set `DATABASE_URL` (from Neon on Vercel). Create tables once:
+
+```bash
+# after .env.local has DATABASE_URL
+pnpm db:push
+```
 
 ## Deploy to Vercel (one project)
 
