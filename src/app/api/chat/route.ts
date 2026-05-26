@@ -9,9 +9,6 @@ import { z } from "zod";
 
 export const maxDuration = 60;
 
-const MIN_REQUEST_GAP_MS = 3000;
-let lastChatRequestAt = 0;
-
 const messageSchema = z.object({
   role: z.enum(["user", "assistant"]),
   content: z.string().trim().min(1).max(4000),
@@ -69,15 +66,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: errorMessageFor(e) }, { status: 400 });
   }
 
-  const now = Date.now();
-  if (now - lastChatRequestAt < MIN_REQUEST_GAP_MS) {
-    return NextResponse.json(
-      { error: MAYA_CHAT.rateLimitMessage, retryAfterSec: 5 },
-      { status: 429 },
-    );
-  }
-  lastChatRequestAt = now;
-
   try {
     const reply = await generateMayaReply(rawMessages);
     return NextResponse.json({ message: reply });
@@ -89,12 +77,6 @@ export async function POST(request: Request) {
     )
       ? 429
       : 502;
-    return NextResponse.json(
-      {
-        error: msg,
-        ...(status === 429 ? { retryAfterSec: 60 } : {}),
-      },
-      { status },
-    );
+    return NextResponse.json({ error: msg }, { status });
   }
 }
