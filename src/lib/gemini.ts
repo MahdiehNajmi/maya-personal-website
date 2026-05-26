@@ -13,10 +13,11 @@ export const GEMINI_MODEL = "gemini-2.0-flash";
 const FALLBACK_MODEL = "gemini-2.5-flash";
 const REQUEST_TIMEOUT_MS = 22_000;
 /** Stay under Vercel 60s limit (chat route maxDuration). */
-const SERVER_BUDGET_MS = 48_000;
-const MAX_RETRIES_PER_MODEL = 0;
+const SERVER_BUDGET_MS = 50_000;
+const MAX_RETRIES = 2;
+const RATE_LIMIT_WAIT_MS = 5_000;
 /** Keep history short to reduce tokens and API load. */
-const MAX_HISTORY_TURNS = 16;
+const MAX_HISTORY_TURNS = 12;
 
 export type ChatMessage = {
   role: "user" | "assistant";
@@ -85,7 +86,7 @@ async function callGemini(
       config: {
         systemInstruction,
         temperature: 0.7,
-        maxOutputTokens: 1024,
+        maxOutputTokens: 512,
         abortSignal: controller.signal,
       },
     });
@@ -109,24 +110,31 @@ async function callWithRetries(
   const deadline = Date.now() + SERVER_BUDGET_MS;
   let lastError: unknown;
 
-  for (const model of models) {
-    for (let attempt = 0; attempt <= MAX_RETRIES_PER_MODEL; attempt++) {
-      if (Date.now() >= deadline) break;
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (Date.now() >= deadline) break;
 
-      try {
-        return await callGemini(model, contents, systemInstruction);
-      } catch (error) {
-        lastError = error;
-        if (isRateLimitError(error)) throw error;
-        if (!isRetryableError(error) || attempt === MAX_RETRIES_PER_MODEL) {
-          break;
-        }
-        const wait = Math.min(
-          retryDelayMs(error, attempt),
-          deadline - Date.now() - 500,
-        );
+    const model = attempt < models.length ? models[attempt] : models[models.length - 1];
+
+    try {
+      return await callGemini(model, contents, systemInstruction);
+    } catch (error) {
+      lastError = error;
+
+      if (attempt === MAX_RETRIES) break;
+
+      if (isRateLimitError(error)) {
+        const wait = Math.min(RATE_LIMIT_WAIT_MS * (attempt + 1), deadline - Date.now() - 500);
         if (wait > 0) await sleep(wait);
+        continue;
       }
+
+      if (isRetryableError(error)) {
+        const wait = Math.min(retryDelayMs(error, attempt), deadline - Date.now() - 500);
+        if (wait > 0) await sleep(wait);
+        continue;
+      }
+
+      break;
     }
   }
 
@@ -145,9 +153,9 @@ export async function generateMayaReply(
 
   const persona = loadPersonaPrompt();
   const systemInstruction =
-    persona.length > 2000
-      ? `${persona.slice(0, 2000)}…\n\nYour usual opening line: "${MAYA_CHAT_GREETING}"`
-      : `${persona}\n\nYour usual opening line when someone starts chatting: "${MAYA_CHAT_GREETING}"`;
+    persona.length > 1200
+      ? `${persona.slice(0, 1200)}…\n\nYour greeting: "${MAYA_CHAT_GREETING}"`
+      : `${persona}\n\nYour greeting: "${MAYA_CHAT_GREETING}"`;
 
   return callWithRetries(contents, systemInstruction);
 }
