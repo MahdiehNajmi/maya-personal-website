@@ -15,7 +15,7 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "CONTENT_COLLECTIONS_CONCURRENCY=1 next build",
     "start": "next start",
     "lint": "eslint",
     "lint:fix": "eslint --fix",
@@ -27,6 +27,8 @@
   "dependencies": {
     "@content-collections/mdx": "^0.2.2",
     "@google/genai": "^2.5.0",
+    "@neondatabase/auth": "0.4.1-beta",
+    "@neondatabase/auth-ui": "0.2.0-beta",
     "@neondatabase/serverless": "^1.1.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -35,6 +37,7 @@
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@tailwindcss/postcss": "^4.1.18",
+    "@vercel/blob": "^2.4.0",
     "canvas-confetti": "^1.9.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

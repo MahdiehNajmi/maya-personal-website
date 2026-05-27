@@ -30,5 +30,7 @@ const posts = defineCollection({
 
 export default defineConfig({
     collections: [posts],
+    // Workaround: ensure build concurrency is always a valid positive integer.
+    concurrency: 1,
 });
 

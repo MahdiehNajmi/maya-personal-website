@@ -1,14 +1,15 @@
 import { createComment, listComments } from "@/lib/comments";
+import { auth } from "@/lib/auth/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 const createSchema = z.object({
-  authorName: z.string().trim().min(1, "Name is required.").max(120),
   body: z
     .string()
     .trim()
     .min(3, "Comment must be at least 3 characters.")
     .max(2000, "Comment is too long (max 2000 characters)."),
+  imageIds: z.array(z.number().int().positive()).optional(),
   /** Honeypot — must stay empty */
   website: z.string().optional(),
 });
@@ -30,6 +31,12 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const { data: session } = await auth.getSession();
+  const userId = session?.user?.id;
+  if (!userId) {
+    return NextResponse.json({ error: "Please log in first." }, { status: 401 });
+  }
+
   const now = Date.now();
   if (now - lastPostAt < MIN_POST_GAP_MS) {
     return NextResponse.json(
@@ -57,8 +64,9 @@ export async function POST(request: Request) {
 
   try {
     const comment = await createComment({
-      authorName: parsed.data.authorName,
+      userId,
       body: parsed.data.body,
+      imageIds: parsed.data.imageIds,
     });
     lastPostAt = now;
     return NextResponse.json({ comment }, { status: 201 });

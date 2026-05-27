@@ -10,3 +10,9 @@ export function getDb() {
   const sql = neon(url);
   return drizzle(sql, { schema });
 }
+
+export function getDbOrThrow() {
+  const db = getDb();
+  if (!db) throw new Error("DATABASE_NOT_CONFIGURED");
+  return db;
+}

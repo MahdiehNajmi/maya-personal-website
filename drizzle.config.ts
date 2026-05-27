@@ -16,7 +16,9 @@ function loadEnvFile(path: string) {
     ) {
       value = value.slice(1, -1);
     }
-    if (!process.env[key]) process.env[key] = value;
+    // Allow env files to override empty values injected by tools (e.g. DATABASE_URL="").
+    const existing = process.env[key];
+    if (!existing || existing === '""') process.env[key] = value;
   }
 }
 
