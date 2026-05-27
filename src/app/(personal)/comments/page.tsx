@@ -11,11 +11,14 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function CommentsPage() {
-  const initialComments = await listComments();
+  const { comments: initialComments, error: loadError } = await listComments();
 
   return (
     <main className="comments-main">
-      <CommentsSection initialComments={initialComments} />
+      <CommentsSection
+        initialComments={initialComments}
+        loadError={loadError}
+      />
     </main>
   );
 }

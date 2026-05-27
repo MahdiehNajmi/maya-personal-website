@@ -19,9 +19,10 @@ export type CommentItem = {
 
 type Props = {
   initialComments: CommentItem[];
+  loadError?: string | null;
 };
 
-export function CommentsSection({ initialComments }: Props) {
+export function CommentsSection({ initialComments, loadError }: Props) {
   const router = useRouter();
   const [comments, setComments] = useState(initialComments);
   const [body, setBody] = useState("");
@@ -191,6 +192,11 @@ export function CommentsSection({ initialComments }: Props) {
         </Link>
         <h1 className="comments-page__title">{PERSONAL.comments.pageTitle}</h1>
         <p className="comments-page__lead">{PERSONAL.comments.pageLead}</p>
+        {loadError ? (
+          <p className="comments-form__error" role="alert">
+            {loadError}
+          </p>
+        ) : null}
       </header>
 
       <div className="comments-auth">

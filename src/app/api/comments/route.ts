@@ -19,7 +19,7 @@ let lastPostAt = 0;
 
 export async function GET() {
   try {
-    const items = await listComments();
+    const { comments: items } = await listComments();
     return NextResponse.json({ comments: items });
   } catch (e) {
     console.error("[comments] GET error:", e);

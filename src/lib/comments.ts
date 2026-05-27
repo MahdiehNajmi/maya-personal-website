@@ -23,10 +23,35 @@ export function formatCommentDate(date: Date): string {
   return `Date Created : ${y}/${mo}/${d} ${h}:${mi}:${s}`;
 }
 
-export async function listComments(): Promise<CommentDto[]> {
-  const db = getDb();
-  if (!db) return [];
+async function loadCommentImages(
+  db: NonNullable<ReturnType<typeof getDb>>,
+  commentIds: number[],
+) {
+  if (commentIds.length === 0) return new Map<number, { id: number; url: string }[]>();
 
+  const images = await db
+    .select({
+      id: commentImages.id,
+      commentId: commentImages.commentId,
+      url: commentImages.url,
+    })
+    .from(commentImages)
+    .where(inArray(commentImages.commentId, commentIds));
+
+  const imagesByCommentId = new Map<number, { id: number; url: string }[]>();
+  for (const img of images) {
+    const cid = img.commentId;
+    if (!cid) continue;
+    const arr = imagesByCommentId.get(cid) ?? [];
+    arr.push({ id: img.id, url: img.url });
+    imagesByCommentId.set(cid, arr);
+  }
+  return imagesByCommentId;
+}
+
+async function listCommentsWithAuthors(
+  db: NonNullable<ReturnType<typeof getDb>>,
+): Promise<CommentDto[]> {
   const rows = await db
     .select({
       id: comments.id,
@@ -45,27 +70,10 @@ export async function listComments(): Promise<CommentDto[]> {
     .orderBy(desc(comments.createdAt))
     .limit(200);
 
-  const commentIds = rows.map((r) => r.id);
-  const images =
-    commentIds.length === 0
-      ? []
-      : await db
-          .select({
-            id: commentImages.id,
-            commentId: commentImages.commentId,
-            url: commentImages.url,
-          })
-          .from(commentImages)
-          .where(inArray(commentImages.commentId, commentIds));
-
-  const imagesByCommentId = new Map<number, { id: number; url: string }[]>();
-  for (const img of images) {
-    const cid = img.commentId;
-    if (!cid) continue;
-    const arr = imagesByCommentId.get(cid) ?? [];
-    arr.push({ id: img.id, url: img.url });
-    imagesByCommentId.set(cid, arr);
-  }
+  const imagesByCommentId = await loadCommentImages(
+    db,
+    rows.map((r) => r.id),
+  );
 
   return rows.map((row) => ({
     id: row.id,
@@ -75,6 +83,65 @@ export async function listComments(): Promise<CommentDto[]> {
     createdAt: row.createdAt.toISOString(),
     images: imagesByCommentId.get(row.id) ?? [],
   }));
+}
+
+async function listCommentsFallback(
+  db: NonNullable<ReturnType<typeof getDb>>,
+): Promise<CommentDto[]> {
+  const rows = await db
+    .select()
+    .from(comments)
+    .orderBy(desc(comments.createdAt))
+    .limit(200);
+
+  const imagesByCommentId = await loadCommentImages(
+    db,
+    rows.map((r) => r.id),
+  );
+
+  return rows.map((row) => ({
+    id: row.id,
+    authorName: "Visitor",
+    authorImageUrl: null,
+    body: row.body,
+    createdAt: row.createdAt.toISOString(),
+    images: imagesByCommentId.get(row.id) ?? [],
+  }));
+}
+
+export type ListCommentsResult = {
+  comments: CommentDto[];
+  error: string | null;
+};
+
+export async function listComments(): Promise<ListCommentsResult> {
+  const db = getDb();
+  if (!db) {
+    return {
+      comments: [],
+      error:
+        "Comments database is not configured. Set DATABASE_URL on Vercel and redeploy.",
+    };
+  }
+
+  try {
+    return { comments: await listCommentsWithAuthors(db), error: null };
+  } catch (e) {
+    console.error("[comments] list with author join failed:", e);
+    try {
+      return { comments: await listCommentsFallback(db), error: null };
+    } catch (e2) {
+      console.error("[comments] list fallback failed:", e2);
+      const msg = e2 instanceof Error ? e2.message : String(e2);
+      const hint = /does not exist|relation/i.test(msg)
+        ? " Run database migrations: pnpm exec drizzle-kit migrate"
+        : "";
+      return {
+        comments: [],
+        error: `Could not load comments.${hint}`,
+      };
+    }
+  }
 }
 
 export async function createComment(input: {
