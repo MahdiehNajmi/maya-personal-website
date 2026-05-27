@@ -2276,15 +2276,15 @@ h1 {
   color: #ffffff;
 }
 
-::root[data-theme="dark"] .auth-btn {
+:root[data-theme="dark"] .auth-btn {
   background: rgba(255, 255, 255, 0.04);
 }
 
-::root[data-theme="dark"] .auth-btn__icon {
+:root[data-theme="dark"] .auth-btn__icon {
   background: rgba(255, 255, 255, 0.08);
 }
 
-::root[data-theme="dark"] .auth-btn--google .auth-btn__icon {
+:root[data-theme="dark"] .auth-btn--google .auth-btn__icon {
   background: rgba(255, 255, 255, 0.98);
 }
 
