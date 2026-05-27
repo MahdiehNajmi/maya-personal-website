@@ -8,6 +8,54 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+function GoogleIcon(props: { className?: string }) {
+  return (
+    <svg
+      className={props.className}
+      width="18"
+      height="18"
+      viewBox="0 0 48 48"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="#FFC107"
+        d="M43.611 20.083H42V20H24v8h11.303C33.656 32.657 29.17 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.958 3.042l5.657-5.657C34.965 6.053 29.711 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917Z"
+      />
+      <path
+        fill="#FF3D00"
+        d="M6.306 14.691 12.88 19.51C14.657 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.958 3.042l5.657-5.657C34.965 6.053 29.711 4 24 4c-7.682 0-14.35 4.332-17.694 10.691Z"
+      />
+      <path
+        fill="#4CAF50"
+        d="M24 44c5.602 0 10.746-2.053 14.646-5.402l-6.761-5.727C29.83 34.169 27.057 35 24 35c-5.149 0-9.621-3.321-11.283-7.946l-6.52 5.025C9.505 39.556 16.227 44 24 44Z"
+      />
+      <path
+        fill="#1976D2"
+        d="M43.611 20.083H42V20H24v8h11.303a11.96 11.96 0 0 1-4.127 5.871l.003-.002 6.761 5.727C36.25 41.131 44 36 44 24c0-1.341-.138-2.65-.389-3.917Z"
+      />
+    </svg>
+  );
+}
+
+function GitHubIcon(props: { className?: string }) {
+  return (
+    <svg
+      className={props.className}
+      width="18"
+      height="18"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill="currentColor"
+        d="M12 .5C5.73.5.75 5.6.75 12c0 5.13 3.15 9.48 7.52 11.02.55.1.75-.24.75-.53v-1.9c-3.06.69-3.7-1.5-3.7-1.5-.5-1.3-1.22-1.65-1.22-1.65-1-.7.08-.69.08-.69 1.1.08 1.68 1.16 1.68 1.16.98 1.72 2.57 1.22 3.2.93.1-.73.38-1.22.69-1.5-2.44-.29-5.01-1.25-5.01-5.56 0-1.23.42-2.24 1.11-3.02-.11-.29-.48-1.46.11-3.04 0 0 .91-.3 2.98 1.15.86-.25 1.78-.37 2.7-.38.92.01 1.85.13 2.72.38 2.06-1.45 2.97-1.15 2.97-1.15.6 1.58.23 2.75.12 3.04.69.78 1.11 1.79 1.11 3.02 0 4.32-2.58 5.26-5.03 5.55.39.35.74 1.04.74 2.1v3.1c0 .29.2.64.76.53A11.27 11.27 0 0 0 23.25 12C23.25 5.6 18.27.5 12 .5Z"
+      />
+    </svg>
+  );
+}
+
 export type CommentItem = {
   id: number;
   authorName: string;
@@ -222,19 +270,25 @@ export function CommentsSection({ initialComments, loadError }: Props) {
             <div className="comments-auth__actions">
               <button
                 type="button"
-                className="rb-btn rb-btn--default"
+                className="auth-btn auth-btn--google"
                 onClick={() => onLogin("google")}
                 disabled={submitting || uploading}
               >
-                Log in with Google
+                <span className="auth-btn__icon">
+                  <GoogleIcon />
+                </span>
+                <span className="auth-btn__label">Continue with Google</span>
               </button>
               <button
                 type="button"
-                className="rb-btn rb-btn--default"
+                className="auth-btn auth-btn--github"
                 onClick={() => onLogin("github")}
                 disabled={submitting || uploading}
               >
-                Log in with GitHub
+                <span className="auth-btn__icon">
+                  <GitHubIcon />
+                </span>
+                <span className="auth-btn__label">Continue with GitHub</span>
               </button>
             </div>
           </div>
