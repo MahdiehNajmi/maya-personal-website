@@ -153,11 +153,11 @@ export const DATA = {
   projects: [
     {
       title: "Personal Website & Portfolio",
-      href: LIVE_SITE,
+      href: portfolioPath("/blog/personal-website-portfolio"),
       dates: "2025 – Present",
       active: true,
       description:
-        "![Homepage — personal site with portfolio, contact, and Mahi AI chat](/projects/personal-website/homepage.png)\n\n**Problem:** I did not have a dedicated platform to showcase my work, skills, and experience in one place.\n\n**Approach:** I planned and built a personal site that introduces who I am, links to a project portfolio and contact section, and includes an authenticated visitor comments area—Google and GitHub sign-in, written feedback, and image attachments stored in the cloud. An AI assistant widget (powered by Gemini) helps visitors engage with the site.\n\n**Results:** A production-deployed website on Vercel with portfolio case studies, contact flow, social login, and a comments experience where visitors can share thoughts and upload images after signing in.\n\n![Visitor comments — social login and feedback with image uploads](/projects/personal-website/comments.png)\n\n[Visit the live site →](https://maya-personal-website.vercel.app/)",
+        "**Problem:** I did not have a dedicated platform to showcase my work, skills, and experience in one place.\n\n**Approach:** I built a personal site with portfolio case studies, contact flow, Neon Auth comments (Google/GitHub) with private image uploads, and a Gemini-powered AI assistant.\n\n**Results:** Production site on Vercel with social login, visitor feedback, and MDX project write-ups.\n\n[Case study with screenshots →](/portfolio/blog/personal-website-portfolio)",
       technologies: [
         "Next.js",
         "TypeScript",
@@ -171,6 +171,11 @@ export const DATA = {
         "Cursor",
       ],
       links: [
+        {
+          type: "Case study",
+          href: portfolioPath("/blog/personal-website-portfolio"),
+          icon: <BookOpen className="size-3" />,
+        },
         {
           type: "Live site",
           href: LIVE_SITE,

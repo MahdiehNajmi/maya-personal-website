@@ -26,6 +26,10 @@ function ProjectImage({ src, alt }: { src: string; alt: string }) {
   );
 }
 
+function isExternalHref(href: string) {
+  return /^https?:\/\//i.test(href);
+}
+
 interface Props {
   title: string;
   href?: string;
@@ -58,6 +62,9 @@ export function ProjectCard({
   demo,
   className,
 }: Props) {
+  const cardHref = href || "#";
+  const cardExternal = href ? isExternalHref(cardHref) : false;
+
   return (
     <div
       className={cn(
@@ -67,9 +74,10 @@ export function ProjectCard({
     >
       <div className="relative shrink-0">
         <Link
-          href={href || "#"}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={cardHref}
+          {...(cardExternal
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
           className="block"
         >
           {video ? (
@@ -89,12 +97,15 @@ export function ProjectCard({
         </Link>
         {links && links.length > 0 && (
           <div className="absolute top-2 right-2 flex flex-wrap gap-2">
-            {links.map((link, idx) => (
+            {links.map((link, idx) => {
+              const external = isExternalHref(link.href);
+              return (
               <Link
                 href={link.href}
                 key={idx}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...(external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 onClick={(e) => e.stopPropagation()}
               >
                 <Badge
@@ -105,7 +116,8 @@ export function ProjectCard({
                   {link.type}
                 </Badge>
               </Link>
-            ))}
+            );
+            })}
           </div>
         )}
       </div>
@@ -116,9 +128,10 @@ export function ProjectCard({
             <time className="text-xs text-muted-foreground">{dates}</time>
           </div>
           <Link
-            href={href || "#"}
-            target="_blank"
-            rel="noopener noreferrer"
+            href={cardHref}
+            {...(cardExternal
+              ? { target: "_blank", rel: "noopener noreferrer" }
+              : {})}
             className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
             aria-label={`Open ${title}`}
           >

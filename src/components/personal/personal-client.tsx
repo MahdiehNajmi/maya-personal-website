@@ -8,7 +8,7 @@ function initDockMagnification() {
   const dock = document.getElementById("site-dock");
   if (!dock) return;
   const items = Array.from(
-    dock.querySelectorAll<HTMLAnchorElement>("a.dock-item"),
+    dock.querySelectorAll<HTMLAnchorElement>(".dock-item"),
   );
   if (!items.length) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -125,7 +125,7 @@ export function ThemeToggle() {
       className="theme-toggle"
       id="theme-toggle"
       aria-label="Switch color theme"
-      aria-pressed="false"
+      aria-pressed="true"
       title="Light / dark theme"
     >
       <span className="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">

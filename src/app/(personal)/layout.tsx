@@ -9,6 +9,7 @@ import { ThemeInitScript } from "@/components/personal/theme-init";
 import { PERSONAL } from "@/data/personal";
 import type { Metadata } from "next";
 import "@/styles/personal.css";
+import "@/styles/hero-shimmer.css";
 
 export const metadata: Metadata = {
   title: PERSONAL.title,

@@ -1,6 +1,6 @@
+import { ContactActions } from "@/components/personal/contact-actions";
 import { PERSONAL } from "@/data/personal";
 import Image from "next/image";
-import Link from "next/link";
 
 function JourneyParagraph({
   text,
@@ -29,8 +29,6 @@ function JourneyParagraph({
 }
 
 export default function PersonalHomePage() {
-  const feedbackMailto = `mailto:${PERSONAL.email}?subject=${encodeURIComponent(PERSONAL.feedback.mailSubject)}`;
-
   return (
     <main>
       <section id="home" className="hero" aria-label="Introduction">
@@ -60,11 +58,6 @@ export default function PersonalHomePage() {
               </span>
             </h1>
             <p className="intro">{PERSONAL.intro}</p>
-            <p className="hero-actions">
-              <Link className="rb-btn rb-btn--default" href="/comments">
-                {PERSONAL.comments.linkLabel}
-              </Link>
-            </p>
           </div>
         </div>
       </section>
@@ -88,26 +81,17 @@ export default function PersonalHomePage() {
 
       <section
         id="contact"
-        className="section section-muted"
+        className="contact"
         aria-labelledby="contact-heading"
       >
-        <h2 id="contact-heading">{PERSONAL.contact.heading}</h2>
-        <p className="section-lead">{PERSONAL.contact.lead}</p>
-        <a className="rb-btn rb-btn--default" href={`mailto:${PERSONAL.email}`}>
-          {PERSONAL.contact.buttonLabel}
-        </a>
-      </section>
-
-      <section id="feedback" className="section" aria-labelledby="feedback-heading">
-        <h2 id="feedback-heading">{PERSONAL.feedback.heading}</h2>
-        <p className="section-lead">{PERSONAL.feedback.lead}</p>
-        <div className="section-actions">
-          <Link className="rb-btn rb-btn--default" href="/comments">
-            {PERSONAL.comments.linkLabel}
-          </Link>
-          <a className="rb-btn rb-btn--outline" href={feedbackMailto}>
-            {PERSONAL.feedback.buttonLabel}
-          </a>
+        <div className="contact-wrap">
+          <h2 id="contact-heading" className="journey-title">
+            {PERSONAL.contact.heading}
+          </h2>
+          <div className="contact-card">
+            <p className="contact-lead">{PERSONAL.contact.lead}</p>
+            <ContactActions />
+          </div>
         </div>
       </section>
     </main>

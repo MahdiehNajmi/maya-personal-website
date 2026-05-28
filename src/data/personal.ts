@@ -36,13 +36,7 @@ export const PERSONAL = {
   contact: {
     heading: "Contact Me",
     lead: "Want to collaborate or ask a question? Send an email and I will get back to you.",
-    buttonLabel: "Email me",
-  },
-  feedback: {
-    heading: "Share your thoughts and give me a feedback",
-    lead: "Your feedback helps me improve this site and my work. Tell me what resonated, what felt unclear, or what you would like to see next.",
-    buttonLabel: "Send feedback by email",
-    mailSubject: "Website feedback",
+    buttonLabel: "Send an email",
   },
   comments: {
     linkLabel: "Leave a comment",

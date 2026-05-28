@@ -53,7 +53,8 @@ function vercelEnvAdd(name, value, target) {
   );
 }
 
-const targets = ["production", "preview"];
+// Preview requires an explicit Git branch in the Vercel CLI; production is enough for the live site.
+const targets = ["production"];
 const vars = [
   ["DATABASE_URL", env.DATABASE_URL],
   ["POSTGRES_URL", env.DATABASE_URL],

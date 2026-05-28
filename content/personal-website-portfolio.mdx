@@ -1,0 +1,44 @@
+---
+title: "Personal Website & Portfolio"
+publishedAt: "2026-05-28"
+author: "Maya"
+summary: "Production personal site on Vercel: portfolio case studies, Neon Auth comments with image uploads, and an AI assistant powered by Gemini."
+image: "/projects/personal-website/homepage.png"
+---
+
+I did not have a dedicated platform to showcase my work, skills, and experience in one place—scattered links and repos were hard for visitors to explore in a single flow.
+
+## Approach
+
+I planned and built a personal site that introduces who I am, links to a project portfolio and contact section, and includes an authenticated **visitor comments** area—**Google** and **GitHub** sign-in, written feedback, and **image attachments** stored in a private Vercel Blob store and served through the app. An **AI assistant** widget (powered by **Google Gemini**) helps visitors engage with the site. The portfolio section uses **content collections** and MDX case studies so each project has a detail page and appears on the blog index.
+
+## Tools used
+
+| Layer        | Technology                                      |
+| ------------ | ----------------------------------------------- |
+| Frontend     | Next.js, React, TypeScript                      |
+| Hosting      | Vercel                                          |
+| Data & auth  | Neon Postgres, Neon Auth, Drizzle ORM           |
+| Media        | Vercel Blob (private store, proxied downloads)  |
+| AI           | Google Gemini                                   |
+| Workflow     | Cursor                                          |
+
+## Results
+
+A production-deployed website with portfolio case studies, contact flow, social login, and a comments experience where visitors can share thoughts and upload images after signing in.
+
+## Screenshots
+
+### Homepage
+
+Personal site with portfolio, contact, and Mahi AI chat.
+
+![Homepage — personal site with portfolio, contact, and Mahi AI chat](/projects/personal-website/homepage.png)
+
+### Visitor comments
+
+Social login and feedback with image uploads.
+
+![Visitor comments — social login and feedback with image uploads](/projects/personal-website/comments.png)
+
+**Live site:** [https://maya-personal-website.vercel.app/](https://maya-personal-website.vercel.app/) · **Comments:** [https://maya-personal-website.vercel.app/comments](https://maya-personal-website.vercel.app/comments) · **GitHub:** [MahdiehNajmi/maya-personal-website](https://github.com/MahdiehNajmi/maya-personal-website)
