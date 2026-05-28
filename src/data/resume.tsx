@@ -9,6 +9,8 @@ const siteUrl =
     ? `https://${process.env.VERCEL_URL}`
     : "https://maya-personal-website.vercel.app");
 
+const LIVE_SITE = "https://maya-personal-website.vercel.app";
+
 type HackathonItem = {
   title: string;
   dates: string;
@@ -149,6 +151,48 @@ export const DATA = {
   ],
 
   projects: [
+    {
+      title: "Personal Website & Portfolio",
+      href: LIVE_SITE,
+      dates: "2025 – Present",
+      active: true,
+      description:
+        "![Homepage — personal site with portfolio, contact, and Mahi AI chat](/projects/personal-website/homepage.png)\n\n**Problem:** I did not have a dedicated platform to showcase my work, skills, and experience in one place.\n\n**Approach:** I planned and built a personal site that introduces who I am, links to a project portfolio and contact section, and includes an authenticated visitor comments area—Google and GitHub sign-in, written feedback, and image attachments stored in the cloud. An AI assistant widget (powered by Gemini) helps visitors engage with the site.\n\n**Results:** A production-deployed website on Vercel with portfolio case studies, contact flow, social login, and a comments experience where visitors can share thoughts and upload images after signing in.\n\n![Visitor comments — social login and feedback with image uploads](/projects/personal-website/comments.png)\n\n[Visit the live site →](https://maya-personal-website.vercel.app/)",
+      technologies: [
+        "Next.js",
+        "TypeScript",
+        "React",
+        "Vercel",
+        "Neon Postgres",
+        "Neon Auth",
+        "Vercel Blob",
+        "Google Gemini",
+        "Drizzle ORM",
+        "Cursor",
+      ],
+      links: [
+        {
+          type: "Live site",
+          href: LIVE_SITE,
+          icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "GitHub",
+          href: "https://github.com/MahdiehNajmi/maya-personal-website",
+          icon: <Icons.github className="size-3" />,
+        },
+        {
+          type: "Comments",
+          href: `${LIVE_SITE}/comments`,
+          icon: <NotebookIcon className="size-3" />,
+        },
+      ],
+      image: "/projects/personal-website/homepage.png",
+      demo: {
+        label: "View Live Site",
+        href: LIVE_SITE,
+      },
+    },
     {
       title: "ER Room — Hospital Wait-Time Tracker",
       href: portfolioPath("/blog/er-room-hospital-wait-time-tracker"),
