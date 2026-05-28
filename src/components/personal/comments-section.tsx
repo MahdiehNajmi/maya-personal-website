@@ -1,11 +1,16 @@
 "use client";
 
+import { CommentImageAttachment } from "@/components/personal/comment-image-attachment";
 import { CommentEmojiPicker } from "@/components/personal/comment-emoji-picker";
 import { formatCommentDate } from "@/lib/comments";
 import { PERSONAL } from "@/data/personal";
 import { authClient } from "@/lib/auth/client";
+import {
+  fetchWithTimeout,
+  readJsonResponse,
+} from "@/lib/read-json-response";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 function GoogleIcon(props: { className?: string }) {
@@ -72,6 +77,7 @@ type Props = {
 
 export function CommentsSection({ initialComments, loadError }: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [comments, setComments] = useState(initialComments);
   const [body, setBody] = useState("");
   const [website, setWebsite] = useState("");
@@ -86,6 +92,17 @@ export function CommentsSection({ initialComments, loadError }: Props) {
   >([]);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+  const uploadInFlightRef = useRef(false);
+
+  useEffect(() => {
+    const authError = searchParams.get("auth_error");
+    if (authError) {
+      setError(decodeURIComponent(authError));
+      const url = new URL(window.location.href);
+      url.searchParams.delete("auth_error");
+      window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -133,6 +150,19 @@ export function CommentsSection({ initialComments, loadError }: Props) {
       return;
     }
 
+    const trimmedBody = body.trim();
+    if (trimmedBody.length < 3 && uploadedImages.length === 0) {
+      setError(
+        "Add a message (at least 3 characters) or attach at least one image.",
+      );
+      return;
+    }
+
+    if (uploading) {
+      setError("Please wait for the image upload to finish.");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -140,7 +170,7 @@ export function CommentsSection({ initialComments, loadError }: Props) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          body,
+          body: trimmedBody,
           imageIds: uploadedImages.map((img) => img.id),
           website,
         }),
@@ -172,29 +202,30 @@ export function CommentsSection({ initialComments, loadError }: Props) {
     }
   };
 
-  const onLogin = async (provider: "google" | "github") => {
+  const startLogin = (provider: "google" | "github") => {
     setError(null);
-    try {
-      await authClient.signIn.social({
-        provider,
-        callbackURL: `${window.location.origin}/comments`,
-      });
-    } catch {
-      setError("Could not start login. Please try again.");
-    }
+    window.location.assign(`/api/auth/login/${provider}`);
   };
 
   const onLogout = async () => {
     setError(null);
     try {
-      await authClient.signOut();
+      const res = await fetch("/api/auth/sign-out", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => "");
+        throw new Error(text || `Logout failed (${res.status}).`);
+      }
       setSessionUserId(null);
       setSessionUserName(null);
       setUploadedImages([]);
       if (fileRef.current) fileRef.current.value = "";
       router.refresh();
-    } catch {
-      setError("Could not log out. Please try again.");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not log out. Please try again.");
     }
   };
 
@@ -204,21 +235,41 @@ export function CommentsSection({ initialComments, loadError }: Props) {
       setError("Please log in first to upload images.");
       return;
     }
+    if (uploadInFlightRef.current) return;
+
+    const MAX_BYTES = 4 * 1024 * 1024;
+    for (const file of Array.from(files)) {
+      if (file.size > MAX_BYTES) {
+        setError("Image is too large (max 4MB). Try resizing or exporting as JPEG.");
+        if (fileRef.current) fileRef.current.value = "";
+        return;
+      }
+    }
+
     setError(null);
     setUploading(true);
+    uploadInFlightRef.current = true;
     try {
       const next: { id: number; url: string }[] = [];
       for (const file of Array.from(files)) {
         const form = new FormData();
         form.set("file", file);
-        const res = await fetch("/api/comment-images/upload", {
-          method: "POST",
-          body: form,
-        });
-        const data = (await res.json()) as {
+
+        const res = await fetchWithTimeout(
+          "/api/comment-images/upload",
+          {
+            method: "POST",
+            body: form,
+            credentials: "include",
+          },
+          90_000,
+        );
+
+        const data = await readJsonResponse<{
           image?: { id: number; url: string };
           error?: string;
-        };
+        }>(res);
+
         if (!res.ok || !data.image) {
           throw new Error(data.error ?? "Upload failed.");
         }
@@ -226,11 +277,26 @@ export function CommentsSection({ initialComments, loadError }: Props) {
       }
       setUploadedImages((prev) => [...prev, ...next]);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Upload failed.");
+      const raw = e instanceof Error ? e.message : "Upload failed.";
+      const message = /aborted/i.test(raw)
+        ? "Image upload was interrupted. Please try again."
+        : raw;
+      setError(message);
+      if (fileRef.current) fileRef.current.value = "";
     } finally {
+      uploadInFlightRef.current = false;
       setUploading(false);
     }
   };
+
+  const trimmedBody = body.trim();
+  const hasCommentContent =
+    trimmedBody.length >= 3 || uploadedImages.length > 0;
+  const canSubmit =
+    Boolean(sessionUserId) &&
+    !submitting &&
+    !uploading &&
+    hasCommentContent;
 
   return (
     <div className="comments-page">
@@ -271,7 +337,7 @@ export function CommentsSection({ initialComments, loadError }: Props) {
               <button
                 type="button"
                 className="auth-btn auth-btn--google"
-                onClick={() => onLogin("google")}
+                onClick={() => startLogin("google")}
                 disabled={submitting || uploading}
               >
                 <span className="auth-btn__icon">
@@ -282,7 +348,7 @@ export function CommentsSection({ initialComments, loadError }: Props) {
               <button
                 type="button"
                 className="auth-btn auth-btn--github"
-                onClick={() => onLogin("github")}
+                onClick={() => startLogin("github")}
                 disabled={submitting || uploading}
               >
                 <span className="auth-btn__icon">
@@ -306,11 +372,9 @@ export function CommentsSection({ initialComments, loadError }: Props) {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder={PERSONAL.comments.messagePlaceholder}
-            required
-            minLength={3}
             maxLength={2000}
             rows={5}
-            disabled={submitting}
+            disabled={submitting || uploading}
           />
           <CommentEmojiPicker
             disabled={submitting}
@@ -331,15 +395,18 @@ export function CommentsSection({ initialComments, loadError }: Props) {
           {uploadedImages.length ? (
             <div className="comments-form__uploads">
               {uploadedImages.map((img) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
+                <CommentImageAttachment
                   key={img.id}
                   src={img.url}
-                  alt=""
-                  className="comments-form__upload"
+                  thumbClassName="comments-form__upload"
                 />
               ))}
             </div>
+          ) : null}
+          {uploading ? (
+            <p className="comments-form__upload-status" role="status">
+              Uploading image…
+            </p>
           ) : null}
         </label>
 
@@ -369,13 +436,17 @@ export function CommentsSection({ initialComments, loadError }: Props) {
         <button
           type="submit"
           className="rb-btn rb-btn--default"
-          disabled={!sessionUserId || submitting || uploading}
+          disabled={!canSubmit}
         >
           {submitting
             ? PERSONAL.comments.submittingLabel
-            : !sessionUserId
-              ? "Log in to comment"
-              : PERSONAL.comments.submitLabel}
+            : uploading
+              ? "Uploading image…"
+              : !sessionUserId
+                ? "Log in to comment"
+                : !hasCommentContent
+                  ? "Add a message or image"
+                  : PERSONAL.comments.submitLabel}
         </button>
       </form>
 
@@ -403,13 +474,10 @@ export function CommentsSection({ initialComments, loadError }: Props) {
                 {c.images?.length ? (
                   <div className="comments-list__images">
                     {c.images.map((img) => (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
+                      <CommentImageAttachment
                         key={img.id}
                         src={img.url}
-                        alt=""
-                        className="comments-list__image"
-                        loading="lazy"
+                        thumbClassName="comments-list__image"
                       />
                     ))}
                   </div>

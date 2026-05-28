@@ -37,6 +37,7 @@ const required = [
   "NEON_AUTH_BASE_URL",
   "NEON_AUTH_COOKIE_SECRET",
   "BLOB_READ_WRITE_TOKEN",
+  "NEXT_PUBLIC_SITE_URL",
 ];
 
 const env = loadEnvFile(envPath);
@@ -59,6 +60,7 @@ const vars = [
   ["NEON_AUTH_BASE_URL", env.NEON_AUTH_BASE_URL],
   ["NEON_AUTH_COOKIE_SECRET", env.NEON_AUTH_COOKIE_SECRET],
   ["BLOB_READ_WRITE_TOKEN", env.BLOB_READ_WRITE_TOKEN],
+  ["NEXT_PUBLIC_SITE_URL", env.NEXT_PUBLIC_SITE_URL],
 ];
 
 for (const target of targets) {

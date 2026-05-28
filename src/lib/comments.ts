@@ -1,5 +1,6 @@
 import { commentImages, comments } from "@/db/schema";
 import { neonAuthUser } from "@/db/neon-auth";
+import { commentImagePublicUrl } from "@/lib/comment-image-url";
 import { getDb } from "@/db/index";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 
@@ -43,7 +44,7 @@ async function loadCommentImages(
     const cid = img.commentId;
     if (!cid) continue;
     const arr = imagesByCommentId.get(cid) ?? [];
-    arr.push({ id: img.id, url: img.url });
+    arr.push({ id: img.id, url: commentImagePublicUrl(img.id) });
     imagesByCommentId.set(cid, arr);
   }
   return imagesByCommentId;
@@ -162,11 +163,22 @@ export async function createComment(input: {
     })
     .returning();
 
+  let images: { id: number; url: string }[] = [];
   if (input.imageIds?.length) {
     await db
       .update(commentImages)
       .set({ commentId: row.id })
       .where(inArray(commentImages.id, input.imageIds));
+
+    const attached = await db
+      .select({ id: commentImages.id })
+      .from(commentImages)
+      .where(inArray(commentImages.id, input.imageIds));
+
+    images = attached.map((img) => ({
+      id: img.id,
+      url: commentImagePublicUrl(img.id),
+    }));
   }
 
   return {
@@ -174,6 +186,6 @@ export async function createComment(input: {
     authorName: "You",
     body: row.body,
     createdAt: row.createdAt.toISOString(),
-    images: [],
+    images,
   };
 }

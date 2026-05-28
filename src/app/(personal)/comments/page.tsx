@@ -2,6 +2,7 @@ import { CommentsSection } from "@/components/personal/comments-section";
 import { PERSONAL } from "@/data/personal";
 import { listComments } from "@/lib/comments";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: `${PERSONAL.comments.pageTitle} — ${PERSONAL.name}`,
@@ -15,10 +16,12 @@ export default async function CommentsPage() {
 
   return (
     <main className="comments-main">
-      <CommentsSection
-        initialComments={initialComments}
-        loadError={loadError}
-      />
+      <Suspense fallback={<p className="comments-page__lead">Loading…</p>}>
+        <CommentsSection
+          initialComments={initialComments}
+          loadError={loadError}
+        />
+      </Suspense>
     </main>
   );
 }

@@ -3,16 +3,24 @@ import { auth } from "@/lib/auth/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-const createSchema = z.object({
-  body: z
-    .string()
-    .trim()
-    .min(3, "Comment must be at least 3 characters.")
-    .max(2000, "Comment is too long (max 2000 characters)."),
-  imageIds: z.array(z.number().int().positive()).optional(),
-  /** Honeypot — must stay empty */
-  website: z.string().optional(),
-});
+const createSchema = z
+  .object({
+    body: z
+      .string()
+      .trim()
+      .max(2000, "Comment is too long (max 2000 characters)."),
+    imageIds: z.array(z.number().int().positive()).optional(),
+    /** Honeypot — must stay empty */
+    website: z.string().optional(),
+  })
+  .refine(
+    (data) =>
+      data.body.length >= 3 || (data.imageIds?.length ?? 0) > 0,
+    {
+      message:
+        "Add a message (at least 3 characters) or attach at least one image.",
+    },
+  );
 
 const MIN_POST_GAP_MS = 5000;
 let lastPostAt = 0;

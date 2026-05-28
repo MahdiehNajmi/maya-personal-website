@@ -3,6 +3,12 @@ import { withContentCollections } from "@content-collections/next";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb",
+    },
+    proxyClientMaxBodySize: "10mb",
+  },
   async headers() {
     return [
       {
