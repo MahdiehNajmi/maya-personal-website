@@ -77,14 +77,18 @@ export default function HackathonsSection() {
                   </p>
                 )}
                 {hackathon.screenshots && hackathon.screenshots.length > 0 && (
-                  <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2 w-full max-w-lg">
+                  <div className="mt-2 grid w-full max-w-lg grid-cols-1 items-stretch gap-3 sm:grid-cols-2">
                     {hackathon.screenshots.map((src, idx) => (
-                      <img
+                      <div
                         key={src}
-                        src={src}
-                        alt={`${hackathon.title} — image ${idx + 1}`}
-                        className="w-full rounded-lg border border-border object-cover max-h-48"
-                      />
+                        className="relative aspect-[4/3] overflow-hidden rounded-lg border border-border bg-muted/20"
+                      >
+                        <img
+                          src={src}
+                          alt={`${hackathon.title} — image ${idx + 1}`}
+                          className="size-full object-cover object-center"
+                        />
+                      </div>
                     ))}
                   </div>
                 )}

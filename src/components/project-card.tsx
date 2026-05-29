@@ -9,18 +9,29 @@ import Link from "next/link";
 import { useState } from "react";
 import Markdown from "react-markdown";
 
-function ProjectImage({ src, alt }: { src: string; alt: string }) {
+const MEDIA_HEIGHT_DEFAULT = "h-48";
+const MEDIA_HEIGHT_COMPACT = "h-32";
+
+function ProjectImage({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) {
   const [imageError, setImageError] = useState(false);
 
   if (!src || imageError) {
-    return <div className="w-full h-48 bg-muted" />;
+    return <div className={cn("w-full bg-muted", className)} />;
   }
 
   return (
     <img
       src={src}
       alt={alt}
-      className="w-full h-48 object-cover"
+      className={cn("w-full object-cover", className)}
       onError={() => setImageError(true)}
     />
   );
@@ -46,6 +57,8 @@ interface Props {
   }[];
   /** Optional primary CTA (e.g. external live demo). */
   demo?: { label: string; href: string };
+  /** Shorter card with scrollable body (portfolio grid). */
+  compact?: boolean;
   className?: string;
 }
 
@@ -60,15 +73,18 @@ export function ProjectCard({
   video,
   links,
   demo,
+  compact = true,
   className,
 }: Props) {
   const cardHref = href || "#";
   const cardExternal = href ? isExternalHref(cardHref) : false;
+  const mediaHeight = compact ? MEDIA_HEIGHT_COMPACT : MEDIA_HEIGHT_DEFAULT;
 
   return (
     <div
       className={cn(
-        "flex flex-col h-full border border-border rounded-xl overflow-hidden hover:ring-2 cursor-pointer hover:ring-muted transition-all duration-200",
+        "flex flex-col overflow-hidden rounded-xl border border-border transition-all duration-200 hover:ring-2 hover:ring-muted",
+        compact ? "max-h-[380px] cursor-pointer" : "h-full",
         className
       )}
     >
@@ -87,12 +103,12 @@ export function ProjectCard({
               loop
               muted
               playsInline
-              className="w-full h-48 object-cover"
+              className={cn("w-full object-cover", mediaHeight)}
             />
           ) : image ? (
-            <ProjectImage src={image} alt={title} />
+            <ProjectImage src={image} alt={title} className={mediaHeight} />
           ) : (
-            <div className="w-full h-48 bg-muted" />
+            <div className={cn("w-full bg-muted", mediaHeight)} />
           )}
         </Link>
         {links && links.length > 0 && (
@@ -100,29 +116,34 @@ export function ProjectCard({
             {links.map((link, idx) => {
               const external = isExternalHref(link.href);
               return (
-              <Link
-                href={link.href}
-                key={idx}
-                {...(external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Badge
-                  className="flex items-center gap-1.5 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
-                  variant="default"
+                <Link
+                  href={link.href}
+                  key={idx}
+                  {...(external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  {link.icon}
-                  {link.type}
-                </Badge>
-              </Link>
-            );
+                  <Badge
+                    className="flex items-center gap-1.5 bg-primary text-xs text-primary-foreground hover:bg-primary/90"
+                    variant="default"
+                  >
+                    {link.icon}
+                    {link.type}
+                  </Badge>
+                </Link>
+              );
             })}
           </div>
         )}
       </div>
-      <div className="p-6 flex flex-col gap-3 flex-1">
-        <div className="flex items-start justify-between gap-2">
+      <div
+        className={cn(
+          "flex min-h-0 flex-1 flex-col",
+          compact ? "p-4" : "gap-3 p-6"
+        )}
+      >
+        <div className="flex shrink-0 items-start justify-between gap-2">
           <div className="flex flex-col gap-1">
             <h3 className="font-semibold">{title}</h3>
             <time className="text-xs text-muted-foreground">{dates}</time>
@@ -132,35 +153,52 @@ export function ProjectCard({
             {...(cardExternal
               ? { target: "_blank", rel: "noopener noreferrer" }
               : {})}
-            className="text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm"
+            className="rounded-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             aria-label={`Open ${title}`}
           >
             <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Link>
         </div>
-        <div className="text-xs flex-1 prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
-          <Markdown>{description}</Markdown>
-        </div>
-        {demo ? (
-          <Button asChild className="w-full shrink-0" size="sm" variant="default">
-            <a href={demo.href} target="_blank" rel="noopener noreferrer">
-              {demo.label}
-            </a>
-          </Button>
-        ) : null}
-        {tags && tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mt-auto">
-            {tags.map((tag) => (
-              <Badge
-                key={tag}
-                className="text-[11px] font-medium border border-border h-6 w-fit px-2"
-                variant="outline"
-              >
-                {tag}
-              </Badge>
-            ))}
+        <div
+          className={cn(
+            compact &&
+              "project-card-scroll flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto overscroll-contain"
+          )}
+        >
+          <div
+            className={cn(
+              "prose max-w-full text-pretty font-sans text-xs leading-relaxed text-muted-foreground dark:prose-invert",
+              !compact && "flex-1"
+            )}
+          >
+            <Markdown>{description}</Markdown>
           </div>
-        )}
+          {demo ? (
+            <Button
+              asChild
+              className="w-full shrink-0"
+              size="sm"
+              variant="default"
+            >
+              <a href={demo.href} target="_blank" rel="noopener noreferrer">
+                {demo.label}
+              </a>
+            </Button>
+          ) : null}
+          {tags && tags.length > 0 && (
+            <div className={cn("flex flex-wrap gap-1", !compact && "mt-auto")}>
+              {tags.map((tag) => (
+                <Badge
+                  key={tag}
+                  className="h-6 w-fit border border-border px-2 text-[11px] font-medium"
+                  variant="outline"
+                >
+                  {tag}
+                </Badge>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

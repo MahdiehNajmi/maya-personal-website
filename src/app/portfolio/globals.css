@@ -287,3 +287,22 @@
 .animate-marquee-y {
   animation: marquee-y var(--duration, 40s) linear infinite;
 }
+
+.project-card-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 45%, transparent)
+    transparent;
+}
+
+.project-card-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.project-card-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
+}
+
+.project-card-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}

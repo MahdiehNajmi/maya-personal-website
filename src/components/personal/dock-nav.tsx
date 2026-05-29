@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { PERSONAL } from "@/data/personal";
 import { PORTFOLIO_BASE } from "@/lib/paths";
 import Link from "next/link";
@@ -118,49 +124,58 @@ export function DockNav() {
 
   return (
     <header className="dock-header" role="banner">
-      <nav className="dock-shell" aria-label="Main navigation">
-        <ul className="dock" id="site-dock">
-          {DOCK_ITEMS.map((item) => {
-            const Icon = item.icon;
-            const isCurrent = item.match?.(pathname) ?? false;
-            const className = dockItemClassName(isCurrent);
-            const content = (
-              <>
-                <Icon />
-                <span className="dock-label">{item.label}</span>
-              </>
-            );
+      <TooltipProvider delayDuration={150}>
+        <nav className="dock-shell" aria-label="Main navigation">
+          <ul className="dock" id="site-dock">
+            {DOCK_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const isCurrent = item.match?.(pathname) ?? false;
+              const className = dockItemClassName(isCurrent);
+              const linkProps = {
+                className,
+                "aria-label": item.label,
+                "aria-current": isCurrent ? ("page" as const) : undefined,
+              };
 
-            return (
-              <li className="dock-slot" key={item.label}>
-                {item.external ? (
-                  <a
-                    className={className}
-                    href={item.href}
-                    target={item.href.startsWith("http") ? "_blank" : undefined}
-                    rel={
-                      item.href.startsWith("http")
-                        ? "noopener noreferrer"
-                        : undefined
-                    }
-                    aria-current={isCurrent ? "page" : undefined}
-                  >
-                    {content}
-                  </a>
-                ) : (
-                  <Link
-                    className={className}
-                    href={item.href}
-                    aria-current={isCurrent ? "page" : undefined}
-                  >
-                    {content}
-                  </Link>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      </nav>
+              return (
+                <li className="dock-slot" key={item.label}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      {item.external ? (
+                        <a
+                          {...linkProps}
+                          href={item.href}
+                          target={
+                            item.href.startsWith("http") ? "_blank" : undefined
+                          }
+                          rel={
+                            item.href.startsWith("http")
+                              ? "noopener noreferrer"
+                              : undefined
+                          }
+                        >
+                          <Icon />
+                        </a>
+                      ) : (
+                        <Link {...linkProps} href={item.href}>
+                          <Icon />
+                        </Link>
+                      )}
+                    </TooltipTrigger>
+                    <TooltipContent
+                      side="bottom"
+                      sideOffset={8}
+                      className="dock-tooltip"
+                    >
+                      {item.label}
+                    </TooltipContent>
+                  </Tooltip>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      </TooltipProvider>
     </header>
   );
 }

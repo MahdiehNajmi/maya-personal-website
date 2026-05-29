@@ -43,6 +43,55 @@ function GoogleIcon(props: { className?: string }) {
   );
 }
 
+function UserIcon(props: { className?: string }) {
+  return (
+    <svg
+      className={props.className}
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function SessionAvatar({
+  imageUrl,
+  name,
+}: {
+  imageUrl: string | null;
+  name: string;
+}) {
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt=""
+        className="comments-user-bar__avatar-media"
+        width={40}
+        height={40}
+        decoding="async"
+      />
+    );
+  }
+
+  const initial = name.trim().charAt(0).toUpperCase() || "?";
+  return (
+    <span className="comments-user-bar__avatar-fallback" aria-hidden="true">
+      {initial}
+    </span>
+  );
+}
+
 function GitHubIcon(props: { className?: string }) {
   return (
     <svg
@@ -82,6 +131,7 @@ export function CommentsSection({ initialComments, loadError }: Props) {
   const [body, setBody] = useState("");
   const [website, setWebsite] = useState("");
   const [sessionUserName, setSessionUserName] = useState<string | null>(null);
+  const [sessionUserImage, setSessionUserImage] = useState<string | null>(null);
   const [sessionUserId, setSessionUserId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -113,11 +163,13 @@ export function CommentsSection({ initialComments, loadError }: Props) {
         const user = res?.data?.user;
         setSessionUserId(user?.id ?? null);
         setSessionUserName(user?.name ?? user?.email ?? null);
+        setSessionUserImage(user?.image ?? null);
       })
       .catch(() => {
         if (cancelled) return;
         setSessionUserId(null);
         setSessionUserName(null);
+        setSessionUserImage(null);
       });
     return () => {
       cancelled = true;
@@ -221,6 +273,7 @@ export function CommentsSection({ initialComments, loadError }: Props) {
       }
       setSessionUserId(null);
       setSessionUserName(null);
+      setSessionUserImage(null);
       setUploadedImages([]);
       if (fileRef.current) fileRef.current.value = "";
       router.refresh();
@@ -298,8 +351,35 @@ export function CommentsSection({ initialComments, loadError }: Props) {
     !uploading &&
     hasCommentContent;
 
+  const displayName = sessionUserName ?? "Visitor";
+
   return (
     <div className="comments-page">
+      {sessionUserId ? (
+        <div className="comments-user-bar">
+          <div className="comments-user-bar__welcome">
+            <div className="comments-user-bar__avatar-bg" aria-hidden="true">
+              {sessionUserImage ? (
+                <SessionAvatar imageUrl={sessionUserImage} name={displayName} />
+              ) : (
+                <UserIcon className="comments-user-bar__avatar-icon" />
+              )}
+            </div>
+            <p className="comments-user-bar__greeting">
+              Welcome, <strong>{displayName}</strong>!
+            </p>
+          </div>
+          <button
+            type="button"
+            className="comments-user-bar__logout"
+            onClick={onLogout}
+            disabled={submitting || uploading}
+          >
+            Log out
+          </button>
+        </div>
+      ) : null}
+
       <header className="comments-page__header">
         <Link href="/" className="comments-page__back">
           ← {PERSONAL.comments.backLabel}
@@ -313,22 +393,8 @@ export function CommentsSection({ initialComments, loadError }: Props) {
         ) : null}
       </header>
 
-      <div className="comments-auth">
-        {sessionUserId ? (
-          <div className="comments-auth__row">
-            <span className="comments-auth__status">
-              Logged in as <strong>{sessionUserName ?? "Visitor"}</strong>
-            </span>
-            <button
-              type="button"
-              className="rb-btn rb-btn--default"
-              onClick={onLogout}
-              disabled={submitting || uploading}
-            >
-              Log out
-            </button>
-          </div>
-        ) : (
+      {!sessionUserId ? (
+        <div className="comments-auth">
           <div className="comments-auth__row">
             <span className="comments-auth__status">
               Please log in to leave a comment.
@@ -358,8 +424,8 @@ export function CommentsSection({ initialComments, loadError }: Props) {
               </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      ) : null}
 
       <form className="comments-form" onSubmit={onSubmit} noValidate>
         <h2 className="comments-form__heading">{PERSONAL.comments.formHeading}</h2>

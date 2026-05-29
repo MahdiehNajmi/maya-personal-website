@@ -21,12 +21,11 @@ export default function ProjectsSection() {
           </div>
           <ProjectsSectionHeader />
         </div>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 max-w-[800px] mx-auto auto-rows-fr">
+        <div className="mx-auto grid max-w-[800px] auto-rows-auto grid-cols-1 items-start gap-3 sm:grid-cols-2">
           {DATA.projects.map((project, id) => (
             <BlurFade
               key={project.title}
               delay={BLUR_FADE_DELAY * 12 + id * 0.05}
-              className="h-full"
             >
               <ProjectCard
                 href={project.href}
