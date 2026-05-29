@@ -313,6 +313,73 @@ export const DATA = {
       image: "/projects/newcomer-navigator/homepage.png",
     },
   ],
+  previousProjects: {
+    heading: "Previous projects",
+    intro:
+      "Earlier in my career, I designed and developed several enterprise applications:",
+    erpNote:
+      "All four ran as integrated modules within a large-scale ERP (Enterprise Resource Planning) system, sharing data across the enterprise.",
+    erp: [
+      {
+        title: "Quality Management System",
+        technologies: [
+          "Oracle Forms Builder",
+          "Oracle Reports Builder",
+          "Oracle Database",
+          "SQL Server",
+          "QlikView",
+        ],
+      },
+      {
+        title: "Warehouse Management",
+        technologies: [
+          "Oracle Forms Builder",
+          "Oracle Reports Builder",
+          "Oracle Database",
+          "SQL Server",
+          "QlikView",
+        ],
+      },
+      {
+        title: "Purchasing",
+        technologies: [
+          "Oracle Forms Builder",
+          "Oracle Reports Builder",
+          "Oracle Database",
+          "SQL Server",
+          "QlikView",
+        ],
+      },
+      {
+        title: "Automotive Auction",
+        technologies: [
+          "Oracle APEX",
+          "Oracle Database",
+          "Microsoft Power BI",
+        ],
+      },
+    ],
+    standalone: [
+      {
+        title: "Automotive Audit System",
+        description:
+          "A platform for auctioning vehicles with minor defects: each car is inspected and documented, then listed in an online auction and sold to the highest bidder.",
+        technologies: [
+          "React",
+          "Redux",
+          "JavaScript",
+          "Node.js",
+          "Material UI",
+          "HTML",
+          "CSS",
+          "PostgreSQL",
+          "AWS RDS",
+          "AWS Lambda",
+          "AWS S3",
+        ],
+      },
+    ],
+  } as const,
   hackathons: [
     {
       title: "Hardware Hackathon — Just Do It!",

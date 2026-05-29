@@ -42,6 +42,7 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
   --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+  --animate-gradient: gradient 4s linear infinite;
 }
 
 /* Light: cool white surfaces, dark blue ink, saturated blue primary (review palette). */
@@ -259,6 +260,18 @@
 @keyframes shimmer-slide {
   to {
     transform: translate(calc(100cqw - 100%), 0);
+  }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
 
