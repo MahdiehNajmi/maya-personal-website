@@ -9,6 +9,7 @@ import HackathonsSection from "@/components/section/hackathons-section";
 import ProjectsSection from "@/components/section/projects-section";
 import CertificationsSection from "@/components/section/certifications-section";
 import EducationSection from "@/components/section/education-section";
+import VolunteerSection from "@/components/section/volunteer-section";
 import { SkillsMarqueeSection } from "@/components/section/skills-marquee-section";
 const BLUR_FADE_DELAY = 0.04;
 
@@ -72,6 +73,11 @@ export default function Page() {
       <section id="hackathons">
         <BlurFade delay={BLUR_FADE_DELAY * 13}>
           <HackathonsSection />
+        </BlurFade>
+      </section>
+      <section id="volunteer">
+        <BlurFade delay={BLUR_FADE_DELAY * 14}>
+          <VolunteerSection />
         </BlurFade>
       </section>
       <section id="contact">

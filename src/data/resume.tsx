@@ -150,6 +150,44 @@ export const DATA = {
     },
   ],
 
+  volunteer: [
+    {
+      organization: "Digital Seniors NL",
+      role: "Digital literacy for seniors",
+      badge: "DSNL",
+      logoUrl: "/logos/digital-seniors-nl.png",
+    },
+    {
+      organization: "Memorial University",
+      role: "Student Volunteer Movement (SVM)",
+      badge: "SVM",
+      logoUrl: "/logos/memorial.png",
+    },
+    {
+      organization: "NL Eats",
+      role: "Community food support",
+      badge: "NL",
+      logoUrl: "/logos/nl-eats.png",
+    },
+    {
+      organization: "Let's Talk Science",
+      role: "STEM outreach",
+      badge: "LTS",
+      logoUrl: "/logos/lets-talk-science.png",
+    },
+    {
+      organization: "Mineral Resources Review",
+      role: "Conferences",
+      badge: "MRR",
+      logoUrl: "/logos/mineral-resources-review.png",
+    },
+    {
+      organization: "Iranian Moms of St. John's",
+      role: "Community group (IMNL)",
+      badge: "IMNL",
+    },
+  ],
+
   projects: [
     {
       title: "Personal Website & Portfolio",
