@@ -2,6 +2,7 @@
 
 import { CommentImageAttachment } from "@/components/personal/comment-image-attachment";
 import { CommentEmojiPicker } from "@/components/personal/comment-emoji-picker";
+import { AnimatedList } from "@/components/ui/animated-list";
 import { formatCommentDate } from "@/lib/comments";
 import { PERSONAL } from "@/data/personal";
 import { authClient } from "@/lib/auth/client";
@@ -275,6 +276,42 @@ type Props = {
   loadError?: string | null;
 };
 
+const SCROLLABLE_COMMENTS_THRESHOLD = 4;
+
+function commentListDelay(count: number) {
+  if (count > 12) return 90;
+  if (count > 6) return 180;
+  if (count > 3) return 280;
+  return 400;
+}
+
+function CommentCard({ comment }: { comment: CommentItem }) {
+  return (
+    <article className="comments-list__item" role="listitem">
+      <div className="comments-list__meta">
+        <strong className="comments-list__author">{comment.authorName}</strong>
+        <time className="comments-list__time" dateTime={comment.createdAt}>
+          {formatCommentDate(new Date(comment.createdAt))}
+        </time>
+      </div>
+      {comment.body ? (
+        <p className="comments-list__body">{comment.body}</p>
+      ) : null}
+      {comment.images?.length ? (
+        <div className="comments-list__images">
+          {comment.images.map((img) => (
+            <CommentImageAttachment
+              key={img.id}
+              src={img.url}
+              thumbClassName="comments-list__image"
+            />
+          ))}
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
 export function CommentsSection({ initialComments, loadError }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -294,6 +331,13 @@ export function CommentsSection({ initialComments, loadError }: Props) {
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const uploadInFlightRef = useRef(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+
+  useEffect(() => {
+    setReduceMotion(
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
+  }, []);
 
   useEffect(() => {
     const authError = searchParams.get("auth_error");
@@ -503,6 +547,9 @@ export function CommentsSection({ initialComments, loadError }: Props) {
     hasCommentContent;
 
   const displayName = sessionUserName ?? "Visitor";
+  const useScrollViewport =
+    comments.length >= SCROLLABLE_COMMENTS_THRESHOLD && !reduceMotion;
+  const useAnimatedList = comments.length > 1 && !reduceMotion;
 
   return (
     <div className="comments-page">
@@ -659,33 +706,34 @@ export function CommentsSection({ initialComments, loadError }: Props) {
         {comments.length === 0 ? (
           <p className="comments-list__empty">{PERSONAL.comments.emptyMessage}</p>
         ) : (
-          <ul className="comments-list__items">
-            {comments.map((c) => (
-              <li key={c.id} className="comments-list__item">
-                <div className="comments-list__meta">
-                  <strong className="comments-list__author">{c.authorName}</strong>
-                  <time
-                    className="comments-list__time"
-                    dateTime={c.createdAt}
-                  >
-                    {formatCommentDate(new Date(c.createdAt))}
-                  </time>
-                </div>
-                <p className="comments-list__body">{c.body}</p>
-                {c.images?.length ? (
-                  <div className="comments-list__images">
-                    {c.images.map((img) => (
-                      <CommentImageAttachment
-                        key={img.id}
-                        src={img.url}
-                        thumbClassName="comments-list__image"
-                      />
-                    ))}
-                  </div>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+          <div
+            className={
+              useScrollViewport
+                ? "comments-list__viewport comments-list__viewport--scroll"
+                : "comments-list__viewport"
+            }
+            role="list"
+          >
+            {useAnimatedList ? (
+              <AnimatedList
+                className="comments-list__items comments-list__items--animated"
+                delay={commentListDelay(comments.length)}
+              >
+                {comments.map((c) => (
+                  <CommentCard key={c.id} comment={c} />
+                ))}
+              </AnimatedList>
+            ) : (
+              <div className="comments-list__items">
+                {comments.map((c) => (
+                  <CommentCard key={c.id} comment={c} />
+                ))}
+              </div>
+            )}
+            {useScrollViewport ? (
+              <div className="comments-list__fade" aria-hidden="true" />
+            ) : null}
+          </div>
         )}
       </section>
     </div>
