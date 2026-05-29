@@ -67,18 +67,20 @@ function UserIcon(props: { className?: string }) {
 function SessionAvatar({
   imageUrl,
   name,
+  className,
 }: {
   imageUrl: string | null;
   name: string;
+  className?: string;
 }) {
   if (imageUrl) {
     return (
       <img
         src={imageUrl}
         alt=""
-        className="comments-user-bar__avatar-media"
-        width={40}
-        height={40}
+        className={className ?? "comments-user-bar__avatar-media"}
+        width={36}
+        height={36}
         decoding="async"
       />
     );
@@ -86,9 +88,158 @@ function SessionAvatar({
 
   const initial = name.trim().charAt(0).toUpperCase() || "?";
   return (
-    <span className="comments-user-bar__avatar-fallback" aria-hidden="true">
+    <span
+      className={className ?? "comments-user-bar__avatar-fallback"}
+      aria-hidden="true"
+    >
       {initial}
     </span>
+  );
+}
+
+function ChevronDownIcon(props: { className?: string }) {
+  return (
+    <svg
+      className={props.className}
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <polyline points="6 9 12 15 18 9" />
+    </svg>
+  );
+}
+
+function LogOutIcon(props: { className?: string }) {
+  return (
+    <svg
+      className={props.className}
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
+function CommentsUserMenu({
+  name,
+  imageUrl,
+  onLogout,
+  disabled,
+}: {
+  name: string;
+  imageUrl: string | null;
+  onLogout: () => void;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <div className="comments-user-bar" ref={menuRef}>
+      <div className="comments-user-bar__frame">
+        <div className="comments-user-bar__inner">
+          <p className="comments-user-bar__greeting">
+            <span className="comments-user-bar__label">Welcome,</span>{" "}
+            <span className="comments-user-bar__name">{name}</span>
+            <span className="comments-user-bar__bang">!</span>
+          </p>
+
+          <div className="comments-user-bar__menu">
+            <button
+              type="button"
+              className={`comments-user-bar__trigger${open ? " is-open" : ""}`}
+              aria-label="Account menu"
+              aria-haspopup="menu"
+              aria-expanded={open}
+              disabled={disabled}
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              <span className="comments-user-bar__trigger-avatar">
+                {imageUrl ? (
+                  <SessionAvatar imageUrl={imageUrl} name={name} />
+                ) : (
+                  <UserIcon className="comments-user-bar__avatar-icon" />
+                )}
+              </span>
+              <span className="comments-user-bar__trigger-chevron">
+                <ChevronDownIcon />
+              </span>
+            </button>
+
+            {open ? (
+              <div className="comments-user-bar__dropdown" role="menu">
+                <div className="comments-user-bar__dropdown-header">
+                  <SessionAvatar
+                    imageUrl={imageUrl}
+                    name={name}
+                    className="comments-user-bar__dropdown-avatar"
+                  />
+                  <div className="comments-user-bar__dropdown-meta">
+                    <span className="comments-user-bar__dropdown-name">
+                      {name}
+                    </span>
+                    <span className="comments-user-bar__dropdown-role">
+                      Signed in
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="comments-user-bar__dropdown-item"
+                  disabled={disabled}
+                  onClick={() => {
+                    setOpen(false);
+                    onLogout();
+                  }}
+                >
+                  <LogOutIcon />
+                  Log out
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -356,28 +507,12 @@ export function CommentsSection({ initialComments, loadError }: Props) {
   return (
     <div className="comments-page">
       {sessionUserId ? (
-        <div className="comments-user-bar">
-          <div className="comments-user-bar__welcome">
-            <div className="comments-user-bar__avatar-bg" aria-hidden="true">
-              {sessionUserImage ? (
-                <SessionAvatar imageUrl={sessionUserImage} name={displayName} />
-              ) : (
-                <UserIcon className="comments-user-bar__avatar-icon" />
-              )}
-            </div>
-            <p className="comments-user-bar__greeting">
-              Welcome, <strong>{displayName}</strong>!
-            </p>
-          </div>
-          <button
-            type="button"
-            className="comments-user-bar__logout"
-            onClick={onLogout}
-            disabled={submitting || uploading}
-          >
-            Log out
-          </button>
-        </div>
+        <CommentsUserMenu
+          name={displayName}
+          imageUrl={sessionUserImage}
+          onLogout={onLogout}
+          disabled={submitting || uploading}
+        />
       ) : null}
 
       <header className="comments-page__header">

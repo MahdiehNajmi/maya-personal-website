@@ -2279,39 +2279,126 @@ h1 {
   top: max(0.85rem, env(safe-area-inset-top, 0px));
   right: calc(max(1rem, env(safe-area-inset-right, 0px)) + 3.35rem);
   z-index: 55;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-  max-width: min(calc(100vw - 5.5rem), 24rem);
+  max-width: min(calc(100vw - 5.5rem), 22rem);
 }
 
-.comments-user-bar__welcome {
-  position: relative;
+.comments-user-bar__frame {
+  padding: 2px;
+  border-radius: 9999px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 66, 66, 0.55),
+    rgba(168, 85, 247, 0.5),
+    rgba(34, 211, 238, 0.55),
+    rgba(74, 222, 128, 0.45)
+  );
+  background-size: 200% 200%;
+  animation: rb-rainbow-move 8s linear infinite;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.3) inset,
+    0 10px 32px rgba(15, 23, 42, 0.14),
+    0 0 22px var(--dock-accent-glow);
+}
+
+.comments-user-bar__inner {
   display: flex;
   align-items: center;
-  min-height: 2.5rem;
-  padding: 0.35rem 2.35rem 0.35rem 0.85rem;
+  gap: 0.65rem;
+  min-height: 2.85rem;
+  padding: 0.35rem 0.45rem 0.35rem 1rem;
   border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  backdrop-filter: blur(16px) saturate(1.35);
+  -webkit-backdrop-filter: blur(16px) saturate(1.35);
+}
+
+.comments-user-bar__greeting {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 0.84rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.comments-user-bar__label {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.comments-user-bar__name {
+  font-weight: 700;
+  background: linear-gradient(120deg, #2563eb, #7c3aed, #0891b2);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.comments-user-bar__bang {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.comments-user-bar__menu {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.comments-user-bar__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem 0.2rem 0.15rem 0.15rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 9999px;
+  background: rgba(248, 250, 252, 0.95);
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.comments-user-bar__trigger:hover:not(:disabled),
+.comments-user-bar__trigger.is-open {
+  border-color: var(--dock-accent);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+.comments-user-bar__trigger:focus-visible {
+  outline: 2px solid var(--dock-accent);
+  outline-offset: 2px;
+}
+
+.comments-user-bar__trigger:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.comments-user-bar__trigger-avatar {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
   overflow: hidden;
 }
 
-.comments-user-bar__avatar-bg {
-  position: absolute;
-  right: 0.2rem;
-  top: 50%;
-  z-index: 0;
+.comments-user-bar__trigger-chevron {
   display: grid;
   place-items: center;
-  width: 2.65rem;
-  height: 2.65rem;
-  transform: translateY(-50%);
-  opacity: 0.42;
-  pointer-events: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--muted);
+  transition: transform 0.18s ease;
+}
+
+.comments-user-bar__trigger.is-open .comments-user-bar__trigger-chevron {
+  transform: rotate(180deg);
+  color: var(--dock-accent);
 }
 
 .comments-user-bar__avatar-media,
@@ -2325,77 +2412,145 @@ h1 {
 .comments-user-bar__avatar-fallback {
   display: grid;
   place-items: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
   font-weight: 700;
   color: #fff;
   background: linear-gradient(145deg, #2563eb, #7c3aed);
 }
 
 .comments-user-bar__avatar-icon {
-  width: 1.65rem;
-  height: 1.65rem;
-  color: var(--accent);
+  width: 1.15rem;
+  height: 1.15rem;
+  color: var(--dock-accent);
 }
 
-.comments-user-bar__greeting {
-  position: relative;
-  z-index: 1;
-  margin: 0;
+.comments-user-bar__dropdown {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 60;
+  min-width: 11.5rem;
+  padding: 0.35rem;
+  border-radius: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow:
+    0 16px 40px rgba(15, 23, 42, 0.16),
+    0 0 0 1px rgba(255, 255, 255, 0.8) inset;
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  animation: comments-menu-in 0.18s ease;
+}
+
+@keyframes comments-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.comments-user-bar__dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.45rem 0.55rem 0.55rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.22);
+  margin-bottom: 0.25rem;
+}
+
+.comments-user-bar__dropdown-avatar {
+  width: 2.1rem;
+  height: 2.1rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.comments-user-bar__dropdown-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.comments-user-bar__dropdown-name {
   font-size: 0.82rem;
-  line-height: 1.25;
+  font-weight: 700;
   color: var(--text);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.comments-user-bar__greeting strong {
-  font-weight: 700;
-}
-
-.comments-user-bar__logout {
-  flex-shrink: 0;
-  padding: 0.45rem 0.75rem;
-  border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.88);
-  color: var(--muted);
-  font: inherit;
-  font-size: 0.78rem;
+.comments-user-bar__dropdown-role {
+  font-size: 0.68rem;
   font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.comments-user-bar__dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #b91c1c;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-align: left;
   cursor: pointer;
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease,
-    background 0.15s ease;
+  transition: background 0.12s ease;
 }
 
-.comments-user-bar__logout:hover:not(:disabled) {
-  color: var(--accent);
-  border-color: rgba(37, 99, 235, 0.35);
-  background: #fff;
+.comments-user-bar__dropdown-item:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.08);
 }
 
-.comments-user-bar__logout:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+.comments-user-bar__dropdown-item:focus-visible {
+  outline: 2px solid rgba(239, 68, 68, 0.45);
+  outline-offset: 1px;
 }
 
-.comments-user-bar__logout:disabled {
+.comments-user-bar__dropdown-item:disabled {
   opacity: 0.55;
   cursor: not-allowed;
 }
 
-:root[data-theme="dark"] .comments-user-bar__welcome,
-:root[data-theme="dark"] .comments-user-bar__logout {
-  background: rgba(15, 23, 42, 0.82);
-  border-color: rgba(148, 163, 184, 0.22);
-  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.35);
+:root[data-theme="dark"] .comments-user-bar__inner {
+  background: rgba(15, 23, 42, 0.88);
+  border-color: rgba(148, 163, 184, 0.2);
 }
 
-:root[data-theme="dark"] .comments-user-bar__logout:hover:not(:disabled) {
-  color: #e2e8f0;
+:root[data-theme="dark"] .comments-user-bar__trigger {
   background: rgba(30, 41, 59, 0.95);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+:root[data-theme="dark"] .comments-user-bar__dropdown {
+  background: rgba(15, 23, 42, 0.96);
+  border-color: rgba(148, 163, 184, 0.22);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comments-user-bar__frame {
+    animation: none;
+    background-size: auto;
+  }
+
+  .comments-user-bar__dropdown {
+    animation: none;
+  }
 }
 
 .comments-page__back {
@@ -2449,16 +2604,17 @@ h1 {
   .comments-user-bar {
     top: calc(var(--dock-clearance) + 0.35rem);
     right: max(0.65rem, env(safe-area-inset-right, 0px));
-    left: max(0.65rem, env(safe-area-inset-left, 0px));
-    max-width: none;
-    justify-content: flex-end;
+    left: auto;
+    max-width: min(calc(100vw - 1.3rem), 18rem);
+  }
+
+  .comments-user-bar__inner {
+    padding-left: 0.85rem;
+    gap: 0.5rem;
   }
 
   .comments-user-bar__greeting {
     font-size: 0.76rem;
-    max-width: 11rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
   }
 }
 
