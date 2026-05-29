@@ -54,7 +54,7 @@ export const PERSONAL = {
     submittingLabel: "Posting…",
     submitError: "Could not post your comment. Please try again.",
     successMessage: "Thank you — your comment was posted.",
-    listHeading: "All comments",
+    listHeading: "Comments",
     emptyMessage: "No comments yet. Be the first to leave one.",
     emojiToggleLabel: "Open emoji picker",
     emojiQuickLabel: "Quick emojis",

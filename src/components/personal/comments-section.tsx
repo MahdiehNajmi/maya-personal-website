@@ -683,7 +683,7 @@ export function CommentsSection({ initialComments, loadError }: Props) {
 
         <button
           type="submit"
-          className="rb-btn rb-btn--default"
+          className="rb-btn rb-btn--default comments-form__submit"
           disabled={!canSubmit}
         >
           {submitting
