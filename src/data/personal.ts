@@ -8,7 +8,7 @@ export const PERSONAL = {
   roleLine: "DATA ANALYST | AI DATA ENGINEER | FULL-STACK DEVELOPER",
   intro:
     "I enjoy turning ideas into simple, meaningful digital experiences that solve real problems.",
-  profileImage: "/images/profile-hero.jpg",
+  profileImage: "/images/profile.png",
   email: "mnajmi@mun.ca",
   github: "https://github.com/MahdiehNajmi",
   about: {
