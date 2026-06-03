@@ -40,14 +40,16 @@ export default async function PersonalHomePage() {
     <main>
       <section id="home" className="hero" aria-label="Introduction">
         <div className="hero-card">
-          <Image
-            className="profile-photo"
-            src={PERSONAL.profileImage}
-            width={200}
-            height={200}
-            alt="Portrait of Maya"
-            priority
-          />
+          <div className="profile-photo-frame">
+            <Image
+              className="profile-photo"
+              src={PERSONAL.profileImage}
+              width={200}
+              height={200}
+              alt="Portrait of Maya"
+              priority
+            />
+          </div>
           <div className="hero-copy">
             <h1 className="typing-line" id="typing-root">
               <span id="typing-output" />
