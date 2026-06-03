@@ -40,7 +40,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   const { data: session } = await auth.getSession();
-  const userId = session?.user?.id;
+  const user = session?.user;
+  const userId = user?.id;
   if (!userId) {
     return NextResponse.json({ error: "Please log in first." }, { status: 401 });
   }
@@ -73,6 +74,8 @@ export async function POST(request: Request) {
   try {
     const comment = await createComment({
       userId,
+      authorName: user.name ?? user.email ?? null,
+      authorImageUrl: user.image ?? null,
       body: parsed.data.body,
       imageIds: parsed.data.imageIds,
     });

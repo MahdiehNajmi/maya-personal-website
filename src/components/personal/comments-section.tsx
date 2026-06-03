@@ -284,9 +284,6 @@ function CommentsLoginMenu({
     <div className="comments-user-bar comments-user-bar--login" ref={menuRef}>
       <div className="comments-user-bar__frame">
         <div className="comments-user-bar__inner">
-          <p className="comments-user-bar__greeting">
-            <span className="comments-user-bar__name">Sign in</span>
-          </p>
           <div className="comments-user-bar__menu">
             <button
               type="button"
@@ -409,6 +406,14 @@ function commentListDelay(count: number) {
   return 400;
 }
 
+function sortCommentsNewestFirst(items: CommentItem[]) {
+  return [...items].sort((a, b) => {
+    const byDate =
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    return byDate || b.id - a.id;
+  });
+}
+
 function CommentCard({ comment }: { comment: CommentItem }) {
   return (
     <article className="comments-list__item" role="listitem">
@@ -444,7 +449,9 @@ export function CommentsSection({
 }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [comments, setComments] = useState(initialComments);
+  const [comments, setComments] = useState(() =>
+    sortCommentsNewestFirst(initialComments),
+  );
   const [body, setBody] = useState("");
   const [website, setWebsite] = useState("");
   const [sessionUserName, setSessionUserName] = useState<string | null>(null);
@@ -467,6 +474,10 @@ export function CommentsSection({
       window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     );
   }, []);
+
+  useEffect(() => {
+    setComments(sortCommentsNewestFirst(initialComments));
+  }, [initialComments]);
 
   useEffect(() => {
     const authError = searchParams.get("auth_error");
@@ -563,7 +574,7 @@ export function CommentsSection({
       }
 
       if (data.comment) {
-        setComments((prev) => [data.comment!, ...prev]);
+        setComments((prev) => sortCommentsNewestFirst([data.comment!, ...prev]));
       }
       setBody("");
       setWebsite("");

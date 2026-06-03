@@ -41,7 +41,7 @@ export const PERSONAL = {
   },
   comments: {
     linkLabel: "Leave a comment",
-    pageTitle: "Visitor comments",
+    pageTitle: "Comments",
     pageLead:
       "Share a comment, idea, or reaction about this site. Your message is saved here so others can read it too.",
     backLabel: "Back to home",

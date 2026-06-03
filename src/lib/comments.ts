@@ -68,7 +68,7 @@ async function listCommentsWithAuthors(
       neonAuthUser,
       sql`${neonAuthUser.id}::text = ${comments.userId}`,
     )
-    .orderBy(desc(comments.createdAt))
+    .orderBy(desc(comments.createdAt), desc(comments.id))
     .limit(200);
 
   const imagesByCommentId = await loadCommentImages(
@@ -92,7 +92,7 @@ async function listCommentsFallback(
   const rows = await db
     .select()
     .from(comments)
-    .orderBy(desc(comments.createdAt))
+    .orderBy(desc(comments.createdAt), desc(comments.id))
     .limit(200);
 
   const imagesByCommentId = await loadCommentImages(
@@ -147,6 +147,8 @@ export async function listComments(): Promise<ListCommentsResult> {
 
 export async function createComment(input: {
   userId: string;
+  authorName?: string | null;
+  authorImageUrl?: string | null;
   body: string;
   imageIds?: number[];
 }): Promise<CommentDto> {
@@ -183,7 +185,8 @@ export async function createComment(input: {
 
   return {
     id: row.id,
-    authorName: "You",
+    authorName: input.authorName?.trim() || "Community member",
+    authorImageUrl: input.authorImageUrl ?? null,
     body: row.body,
     createdAt: row.createdAt.toISOString(),
     images,

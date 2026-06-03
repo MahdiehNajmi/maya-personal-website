@@ -2377,6 +2377,10 @@ h1 {
   -webkit-backdrop-filter: blur(16px) saturate(1.35);
 }
 
+.comments-user-bar--login .comments-user-bar__inner {
+  padding: 0.2rem;
+}
+
 .comments-user-bar__greeting {
   margin: 0;
   flex: 1;
