@@ -1,16 +1,11 @@
 "use client";
 
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { ResumePreviewModal } from "@/components/personal/resume-preview-modal";
 import { PERSONAL } from "@/data/personal";
 import { PORTFOLIO_BASE } from "@/lib/paths";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import type { ComponentType, SVGProps } from "react";
+import { useState, type ComponentType, type SVGProps } from "react";
 
 const HomeIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg className="dock-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -56,9 +51,13 @@ const ContactIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const CommentsIcon = (props: SVGProps<SVGSVGElement>) => (
+const ResumeIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg className="dock-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="8" y1="13" x2="16" y2="13" />
+    <line x1="8" y1="17" x2="16" y2="17" />
+    <line x1="8" y1="9" x2="10" y2="9" />
   </svg>
 );
 
@@ -67,6 +66,7 @@ type DockItem = {
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   external?: boolean;
+  action?: "resume";
   match?: (pathname: string) => boolean;
 };
 
@@ -102,10 +102,10 @@ const DOCK_ITEMS: DockItem[] = [
     match: (pathname) => pathname === "/",
   },
   {
-    label: "Comments",
-    href: "/comments",
-    icon: CommentsIcon,
-    match: (pathname) => pathname === "/comments",
+    label: "Resume",
+    href: "#resume",
+    icon: ResumeIcon,
+    action: "resume",
   },
   {
     label: "Contact",
@@ -121,10 +121,11 @@ function dockItemClassName(isCurrent: boolean) {
 
 export function DockNav() {
   const pathname = usePathname();
+  const [resumeOpen, setResumeOpen] = useState(false);
 
   return (
-    <header className="dock-header" role="banner">
-      <TooltipProvider delayDuration={150}>
+    <>
+      <header className="dock-header" role="banner">
         <nav className="dock-shell" aria-label="Main navigation">
           <ul className="dock" id="site-dock">
             {DOCK_ITEMS.map((item) => {
@@ -136,46 +137,51 @@ export function DockNav() {
                 "aria-label": item.label,
                 "aria-current": isCurrent ? ("page" as const) : undefined,
               };
+              const content = (
+                <>
+                  <Icon />
+                  <span className="dock-label">{item.label}</span>
+                </>
+              );
 
               return (
                 <li className="dock-slot" key={item.label}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      {item.external ? (
-                        <a
-                          {...linkProps}
-                          href={item.href}
-                          target={
-                            item.href.startsWith("http") ? "_blank" : undefined
-                          }
-                          rel={
-                            item.href.startsWith("http")
-                              ? "noopener noreferrer"
-                              : undefined
-                          }
-                        >
-                          <Icon />
-                        </a>
-                      ) : (
-                        <Link {...linkProps} href={item.href}>
-                          <Icon />
-                        </Link>
-                      )}
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="bottom"
-                      sideOffset={8}
-                      className="dock-tooltip"
+                  {item.action === "resume" ? (
+                    <button
+                      {...linkProps}
+                      type="button"
+                      onClick={() => setResumeOpen(true)}
                     >
-                      {item.label}
-                    </TooltipContent>
-                  </Tooltip>
+                      {content}
+                    </button>
+                  ) : item.external ? (
+                    <a
+                      {...linkProps}
+                      href={item.href}
+                      target={item.href.startsWith("http") ? "_blank" : undefined}
+                      rel={
+                        item.href.startsWith("http")
+                          ? "noopener noreferrer"
+                          : undefined
+                      }
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <Link {...linkProps} href={item.href}>
+                      {content}
+                    </Link>
+                  )}
                 </li>
               );
             })}
           </ul>
         </nav>
-      </TooltipProvider>
-    </header>
+      </header>
+      <ResumePreviewModal
+        open={resumeOpen}
+        onClose={() => setResumeOpen(false)}
+      />
+    </>
   );
 }

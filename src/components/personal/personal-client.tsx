@@ -97,9 +97,14 @@ export function ThemeToggle() {
   useEffect(() => {
     const btn = document.getElementById("theme-toggle");
     if (!btn) return;
+    const applyTheme = (theme: "light" | "dark") => {
+      document.documentElement.setAttribute("data-theme", theme);
+      document.documentElement.classList.toggle("dark", theme === "dark");
+    };
     const sync = () => {
       const isDark =
         document.documentElement.getAttribute("data-theme") === "dark";
+      document.documentElement.classList.toggle("dark", isDark);
       btn.setAttribute("aria-pressed", isDark ? "true" : "false");
     };
     sync();
@@ -107,7 +112,7 @@ export function ThemeToggle() {
       const isDark =
         document.documentElement.getAttribute("data-theme") === "dark";
       const next = isDark ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
+      applyTheme(next);
       try {
         localStorage.setItem("theme", next);
       } catch {

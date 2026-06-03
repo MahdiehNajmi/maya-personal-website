@@ -1,6 +1,9 @@
 import { ContactActions } from "@/components/personal/contact-actions";
+import { CommentsSection } from "@/components/personal/comments-section";
 import { PERSONAL } from "@/data/personal";
+import { listComments } from "@/lib/comments";
 import Image from "next/image";
+import { Suspense } from "react";
 
 function JourneyParagraph({
   text,
@@ -28,7 +31,9 @@ function JourneyParagraph({
   return <p className="journey-para">{content}</p>;
 }
 
-export default function PersonalHomePage() {
+export default async function PersonalHomePage() {
+  const { comments: initialComments, error: loadError } = await listComments();
+
   return (
     <main>
       <section id="home" className="hero" aria-label="Introduction">
@@ -57,6 +62,7 @@ export default function PersonalHomePage() {
                 |
               </span>
             </h1>
+            <p className="hero-role">{PERSONAL.roleLine}</p>
             <p className="intro">{PERSONAL.intro}</p>
           </div>
         </div>
@@ -94,6 +100,32 @@ export default function PersonalHomePage() {
           </div>
         </div>
       </section>
+
+      <section
+        id="comments"
+        className="home-comments"
+        aria-labelledby="home-comments-heading"
+      >
+        <div className="home-comments-wrap">
+          <Suspense fallback={<p className="comments-page__lead">Loading…</p>}>
+            <CommentsSection
+              initialComments={initialComments}
+              loadError={loadError}
+              variant="home"
+              showBackLink={false}
+            />
+          </Suspense>
+        </div>
+      </section>
+
+      <div className="back-to-top-wrap" aria-label="End of home page">
+        <a className="back-to-top" href="#home">
+          <span className="back-to-top__icon" aria-hidden="true">
+            ↑
+          </span>
+          <span>Back to top</span>
+        </a>
+      </div>
     </main>
   );
 }

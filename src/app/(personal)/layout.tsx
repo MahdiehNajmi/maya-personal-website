@@ -8,6 +8,7 @@ import {
 import { ThemeInitScript } from "@/components/personal/theme-init";
 import { PERSONAL } from "@/data/personal";
 import type { Metadata } from "next";
+import "@/styles/site-nav.css";
 import "@/styles/personal.css";
 import "@/styles/hero-shimmer.css";
 

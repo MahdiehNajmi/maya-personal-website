@@ -3,6 +3,7 @@ export const PERSONAL = {
   title: "Maya",
   metaDescription: "Personal website of Maya, Developer.",
   typingText: "Hi, this is Maya",
+  roleLine: "DATA ANALYST | AI DATA ENGINEER | FULL-STACK DEVELOPER",
   intro:
     "I enjoy turning ideas into simple, meaningful digital experiences that solve real problems.",
   profileImage: "/images/profile.png",

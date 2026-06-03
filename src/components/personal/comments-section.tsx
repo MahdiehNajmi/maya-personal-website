@@ -244,6 +244,128 @@ function CommentsUserMenu({
   );
 }
 
+function CommentsLoginMenu({
+  onLogin,
+  disabled,
+}: {
+  onLogin: (provider: "google" | "github") => void;
+  disabled?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  const choose = (provider: "google" | "github") => {
+    setOpen(false);
+    onLogin(provider);
+  };
+
+  return (
+    <div className="comments-user-bar comments-user-bar--login" ref={menuRef}>
+      <div className="comments-user-bar__frame">
+        <div className="comments-user-bar__inner">
+          <p className="comments-user-bar__greeting">
+            <span className="comments-user-bar__name">Sign in</span>
+          </p>
+          <div className="comments-user-bar__menu">
+            <button
+              type="button"
+              className={`comments-user-bar__trigger${open ? " is-open" : ""}`}
+              aria-label="Open sign in options"
+              aria-haspopup="menu"
+              aria-expanded={open}
+              disabled={disabled}
+              onClick={() => setOpen((prev) => !prev)}
+            >
+              <span className="comments-user-bar__trigger-avatar">
+                <UserIcon className="comments-user-bar__avatar-icon" />
+              </span>
+              <span className="comments-user-bar__trigger-chevron">
+                <ChevronDownIcon />
+              </span>
+            </button>
+
+            {open ? (
+              <div className="comments-user-bar__dropdown" role="menu">
+                <div className="comments-user-bar__dropdown-header">
+                  <span className="comments-user-bar__dropdown-avatar comments-user-bar__dropdown-avatar--icon">
+                    <UserIcon className="comments-user-bar__avatar-icon" />
+                  </span>
+                  <div className="comments-user-bar__dropdown-meta">
+                    <span className="comments-user-bar__dropdown-name">
+                      Sign in to comment
+                    </span>
+                    <span className="comments-user-bar__dropdown-role">
+                      Choose an account
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="comments-user-bar__dropdown-item comments-user-bar__dropdown-item--auth"
+                  disabled={disabled}
+                  onClick={() => choose("google")}
+                >
+                  <GoogleIcon />
+                  Continue with Google
+                </button>
+                <button
+                  type="button"
+                  role="menuitem"
+                  className="comments-user-bar__dropdown-item comments-user-bar__dropdown-item--auth"
+                  disabled={disabled}
+                  onClick={() => choose("github")}
+                >
+                  <GitHubIcon />
+                  Continue with GitHub
+                </button>
+                <div className="comments-user-bar__dropdown-separator" />
+                <Link
+                  href="/sign-up"
+                  role="menuitem"
+                  className="comments-user-bar__dropdown-item comments-user-bar__dropdown-item--link"
+                  onClick={() => setOpen(false)}
+                >
+                  Create an account
+                </Link>
+                <Link
+                  href="/sign-up?mode=sign-in"
+                  role="menuitem"
+                  className="comments-user-bar__dropdown-item comments-user-bar__dropdown-item--link"
+                  onClick={() => setOpen(false)}
+                >
+                  Sign in with email
+                </Link>
+              </div>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function GitHubIcon(props: { className?: string }) {
   return (
     <svg
@@ -274,6 +396,8 @@ export type CommentItem = {
 type Props = {
   initialComments: CommentItem[];
   loadError?: string | null;
+  variant?: "page" | "home";
+  showBackLink?: boolean;
 };
 
 const SCROLLABLE_COMMENTS_THRESHOLD = 4;
@@ -312,7 +436,12 @@ function CommentCard({ comment }: { comment: CommentItem }) {
   );
 }
 
-export function CommentsSection({ initialComments, loadError }: Props) {
+export function CommentsSection({
+  initialComments,
+  loadError,
+  variant = "page",
+  showBackLink = true,
+}: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [comments, setComments] = useState(initialComments);
@@ -451,7 +580,9 @@ export function CommentsSection({ initialComments, loadError }: Props) {
 
   const startLogin = (provider: "google" | "github") => {
     setError(null);
-    window.location.assign(`/api/auth/login/${provider}`);
+    window.location.assign(
+      `/api/auth/login/${provider}?returnTo=${encodeURIComponent("/#comments")}`,
+    );
   };
 
   const onLogout = async () => {
@@ -550,9 +681,14 @@ export function CommentsSection({ initialComments, loadError }: Props) {
   const useScrollViewport =
     comments.length >= SCROLLABLE_COMMENTS_THRESHOLD && !reduceMotion;
   const useAnimatedList = comments.length > 1 && !reduceMotion;
+  const isHomeVariant = variant === "home";
 
   return (
-    <div className="comments-page">
+    <div
+      className={
+        isHomeVariant ? "comments-page comments-page--home" : "comments-page"
+      }
+    >
       {sessionUserId ? (
         <CommentsUserMenu
           name={displayName}
@@ -560,13 +696,26 @@ export function CommentsSection({ initialComments, loadError }: Props) {
           onLogout={onLogout}
           disabled={submitting || uploading}
         />
-      ) : null}
+      ) : (
+        <CommentsLoginMenu
+          onLogin={startLogin}
+          disabled={submitting || uploading}
+        />
+      )}
 
       <header className="comments-page__header">
-        <Link href="/" className="comments-page__back">
-          ← {PERSONAL.comments.backLabel}
-        </Link>
-        <h1 className="comments-page__title">{PERSONAL.comments.pageTitle}</h1>
+        {showBackLink ? (
+          <Link href="/" className="comments-page__back">
+            ← {PERSONAL.comments.backLabel}
+          </Link>
+        ) : null}
+        {isHomeVariant ? (
+          <h2 id="home-comments-heading" className="comments-page__title">
+            {PERSONAL.comments.pageTitle}
+          </h2>
+        ) : (
+          <h1 className="comments-page__title">{PERSONAL.comments.pageTitle}</h1>
+        )}
         <p className="comments-page__lead">{PERSONAL.comments.pageLead}</p>
         {loadError ? (
           <p className="comments-form__error" role="alert">
@@ -574,40 +723,6 @@ export function CommentsSection({ initialComments, loadError }: Props) {
           </p>
         ) : null}
       </header>
-
-      {!sessionUserId ? (
-        <div className="comments-auth">
-          <div className="comments-auth__row">
-            <span className="comments-auth__status">
-              Please log in to leave a comment.
-            </span>
-            <div className="comments-auth__actions">
-              <button
-                type="button"
-                className="auth-btn auth-btn--google"
-                onClick={() => startLogin("google")}
-                disabled={submitting || uploading}
-              >
-                <span className="auth-btn__icon">
-                  <GoogleIcon />
-                </span>
-                <span className="auth-btn__label">Continue with Google</span>
-              </button>
-              <button
-                type="button"
-                className="auth-btn auth-btn--github"
-                onClick={() => startLogin("github")}
-                disabled={submitting || uploading}
-              >
-                <span className="auth-btn__icon">
-                  <GitHubIcon />
-                </span>
-                <span className="auth-btn__label">Continue with GitHub</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
 
       <form className="comments-form" onSubmit={onSubmit} noValidate>
         <h2 className="comments-form__heading">{PERSONAL.comments.formHeading}</h2>

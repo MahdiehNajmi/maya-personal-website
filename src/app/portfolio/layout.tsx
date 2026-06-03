@@ -1,4 +1,9 @@
-import Navbar from "@/components/navbar";
+import { DockNav } from "@/components/personal/dock-nav";
+import {
+  PersonalClientEffects,
+  ThemeToggle,
+} from "@/components/personal/personal-client";
+import { ThemeInitScript } from "@/components/personal/theme-init";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
@@ -7,6 +12,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { FlickeringGrid } from "@/components/magicui/flickering-grid";
+import "@/styles/site-nav.css";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -54,8 +60,12 @@ export default function PortfolioLayout({
         geistMono.variable,
       )}
     >
+      <ThemeInitScript />
       <ThemeProvider attribute="class" defaultTheme="dark">
         <TooltipProvider delayDuration={0}>
+          <DockNav />
+          <ThemeToggle />
+          <PersonalClientEffects />
           <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
             <FlickeringGrid
               className="h-full w-full"
@@ -68,10 +78,9 @@ export default function PortfolioLayout({
               }}
             />
           </div>
-          <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">
+          <div className="relative z-10 max-w-2xl mx-auto px-6 pb-16 pt-28 sm:pb-20 sm:pt-32">
             {children}
           </div>
-          <Navbar />
         </TooltipProvider>
       </ThemeProvider>
     </div>

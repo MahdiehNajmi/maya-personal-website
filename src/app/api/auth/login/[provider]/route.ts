@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth/server";
-import { getSiteUrl } from "@/lib/site-url";
+import { safeReturnUrl, withAuthError } from "@/lib/auth/redirect";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -11,16 +11,13 @@ export async function GET(
   context: { params: Promise<{ provider: string }> },
 ) {
   const { provider } = await context.params;
-  const site = getSiteUrl(request.nextUrl.origin);
-  const commentsUrl = `${site}/comments`;
+  const callbackURL = safeReturnUrl(request);
 
   if (!PROVIDERS.has(provider)) {
     return NextResponse.redirect(
-      `${commentsUrl}?auth_error=${encodeURIComponent("Invalid login provider.")}`,
+      withAuthError(callbackURL, "Invalid login provider."),
     );
   }
-
-  const callbackURL = `${commentsUrl}`;
 
   const result = await auth.signIn.social({
     provider: provider as "google" | "github",
@@ -37,14 +34,14 @@ export async function GET(
       result.error.message ||
       "Login was blocked. Add this site to Neon Auth trusted domains and configure OAuth in the Neon Console.";
     return NextResponse.redirect(
-      `${commentsUrl}?auth_error=${encodeURIComponent(message)}`,
+      withAuthError(callbackURL, message),
     );
   }
 
   const redirectUrl = (result.data as { url?: string } | null)?.url;
   if (!redirectUrl) {
     return NextResponse.redirect(
-      `${commentsUrl}?auth_error=${encodeURIComponent("Could not start OAuth redirect.")}`,
+      withAuthError(callbackURL, "Could not start OAuth redirect."),
     );
   }
 
