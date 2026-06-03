@@ -1,4 +1,6 @@
 export const PERSONAL = {
+  /** Set to true to show the Mahi AI chat widget on personal pages. */
+  chatWidgetEnabled: false,
   name: "Maya",
   title: "Maya",
   metaDescription: "Personal website of Maya, Developer.",

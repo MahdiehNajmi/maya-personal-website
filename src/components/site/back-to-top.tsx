@@ -1,5 +1,6 @@
 "use client";
 
+import { PERSONAL } from "@/data/personal";
 import { cn } from "@/lib/utils";
 import { ChevronUp } from "lucide-react";
 import { usePathname } from "next/navigation";
@@ -17,9 +18,10 @@ export function BackToTop() {
   const pathname = usePathname();
   const href = pathname === "/" ? "#home" : "#page-top";
   const aboveChat =
-    pathname === "/" ||
-    pathname === "/comments" ||
-    pathname.startsWith("/sign-up");
+    PERSONAL.chatWidgetEnabled &&
+    (pathname === "/" ||
+      pathname === "/comments" ||
+      pathname.startsWith("/sign-up"));
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {

@@ -42,7 +42,7 @@ export default function PersonalLayout({
         <SiteFooter />
       </div>
       <BackToTop />
-      <MayaChatWidget />
+      {PERSONAL.chatWidgetEnabled ? <MayaChatWidget /> : null}
     </>
   );
 }
