@@ -2340,14 +2340,14 @@ h1 {
 
 .comments-user-bar {
   position: fixed;
-  top: max(0.85rem, env(safe-area-inset-top, 0px));
-  right: calc(max(1rem, env(safe-area-inset-right, 0px)) + 3.35rem);
+  top: max(0.7rem, env(safe-area-inset-top, 0px));
+  right: calc(max(0.85rem, env(safe-area-inset-right, 0px)) + 3.2rem);
   z-index: 55;
-  max-width: min(calc(100vw - 5.5rem), 22rem);
+  max-width: min(calc(100vw - 5.2rem), 19rem);
 }
 
 .comments-user-bar__frame {
-  padding: 2px;
+  padding: 1.5px;
   border-radius: 9999px;
   background: linear-gradient(
     135deg,
@@ -2367,9 +2367,9 @@ h1 {
 .comments-user-bar__inner {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  min-height: 2.85rem;
-  padding: 0.35rem 0.45rem 0.35rem 1rem;
+  gap: 0.48rem;
+  min-height: 2.45rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.78rem;
   border-radius: 9999px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(148, 163, 184, 0.35);
@@ -2381,7 +2381,7 @@ h1 {
   margin: 0;
   flex: 1;
   min-width: 0;
-  font-size: 0.84rem;
+  font-size: 0.76rem;
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
@@ -2415,7 +2415,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 0.15rem;
-  padding: 0.15rem 0.2rem 0.15rem 0.15rem;
+  padding: 0.1rem 0.15rem 0.1rem 0.1rem;
   border: 1px solid rgba(148, 163, 184, 0.35);
   border-radius: 9999px;
   background: rgba(248, 250, 252, 0.95);
@@ -2445,8 +2445,8 @@ h1 {
 .comments-user-bar__trigger-avatar {
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 1.7rem;
+  height: 1.7rem;
   border-radius: 50%;
   overflow: hidden;
 }
@@ -2454,8 +2454,8 @@ h1 {
 .comments-user-bar__trigger-chevron {
   display: grid;
   place-items: center;
-  width: 1.1rem;
-  height: 1.1rem;
+  width: 0.95rem;
+  height: 0.95rem;
   color: var(--muted);
   transition: transform 0.18s ease;
 }
@@ -2476,15 +2476,15 @@ h1 {
 .comments-user-bar__avatar-fallback {
   display: grid;
   place-items: center;
-  font-size: 0.85rem;
+  font-size: 0.76rem;
   font-weight: 700;
   color: #fff;
   background: linear-gradient(145deg, #2563eb, #7c3aed);
 }
 
 .comments-user-bar__avatar-icon {
-  width: 1.15rem;
-  height: 1.15rem;
+  width: 1rem;
+  height: 1rem;
   color: var(--dock-accent);
 }
 
@@ -2693,12 +2693,12 @@ h1 {
   }
 
   .comments-user-bar__inner {
-    padding-left: 0.85rem;
-    gap: 0.5rem;
+    padding-left: 0.72rem;
+    gap: 0.42rem;
   }
 
   .comments-user-bar__greeting {
-    font-size: 0.76rem;
+    font-size: 0.7rem;
   }
 }
 

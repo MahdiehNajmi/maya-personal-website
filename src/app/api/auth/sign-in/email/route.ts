@@ -7,6 +7,14 @@ type EmailAuthResult = {
   error?: { message?: string } | null;
 };
 
+function authErrorMessage(message: string | undefined) {
+  if (message && /invalid origin/i.test(message)) {
+    return "This domain is not added to Neon Auth trusted domains. Add https://mayanajmi.app in Neon Auth settings, then try again.";
+  }
+
+  return message || "Could not sign in. Please try again.";
+}
+
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as {
     email?: unknown;
@@ -31,7 +39,7 @@ export async function POST(request: NextRequest) {
 
   if (result.error) {
     return NextResponse.json(
-      { error: result.error.message || "Could not sign in. Please try again." },
+      { error: authErrorMessage(result.error.message) },
       { status: 401 },
     );
   }

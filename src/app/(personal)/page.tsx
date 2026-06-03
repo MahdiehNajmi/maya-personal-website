@@ -86,22 +86,6 @@ export default async function PersonalHomePage() {
       </section>
 
       <section
-        id="contact"
-        className="contact"
-        aria-labelledby="contact-heading"
-      >
-        <div className="contact-wrap">
-          <h2 id="contact-heading" className="journey-title">
-            {PERSONAL.contact.heading}
-          </h2>
-          <div className="contact-card">
-            <p className="contact-lead">{PERSONAL.contact.lead}</p>
-            <ContactActions />
-          </div>
-        </div>
-      </section>
-
-      <section
         id="comments"
         className="home-comments"
         aria-labelledby="home-comments-heading"
@@ -115,6 +99,22 @@ export default async function PersonalHomePage() {
               showBackLink={false}
             />
           </Suspense>
+        </div>
+      </section>
+
+      <section
+        id="contact"
+        className="contact"
+        aria-labelledby="contact-heading"
+      >
+        <div className="contact-wrap">
+          <h2 id="contact-heading" className="journey-title">
+            {PERSONAL.contact.heading}
+          </h2>
+          <div className="contact-card">
+            <p className="contact-lead">{PERSONAL.contact.lead}</p>
+            <ContactActions />
+          </div>
         </div>
       </section>
 

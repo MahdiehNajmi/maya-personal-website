@@ -8,6 +8,14 @@ type EmailAuthResult = {
   error?: { message?: string } | null;
 };
 
+function authErrorMessage(message: string | undefined) {
+  if (message && /invalid origin/i.test(message)) {
+    return "This domain is not added to Neon Auth trusted domains. Add https://mayanajmi.app in Neon Auth settings, then try again.";
+  }
+
+  return message || "Could not create your account.";
+}
+
 export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as {
     name?: unknown;
@@ -43,7 +51,7 @@ export async function POST(request: NextRequest) {
 
   if (result.error) {
     return NextResponse.json(
-      { error: result.error.message || "Could not create your account." },
+      { error: authErrorMessage(result.error.message) },
       { status: 400 },
     );
   }
