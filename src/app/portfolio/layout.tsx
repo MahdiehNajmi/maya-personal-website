@@ -4,6 +4,8 @@ import {
   ThemeToggle,
 } from "@/components/personal/personal-client";
 import { ThemeInitScript } from "@/components/personal/theme-init";
+import { BackToTop } from "@/components/site/back-to-top";
+import { SiteFooter } from "@/components/site/site-footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
@@ -78,9 +80,14 @@ export default function PortfolioLayout({
               }}
             />
           </div>
-          <div className="relative z-10 max-w-2xl mx-auto px-6 pb-16 pt-28 sm:pb-20 sm:pt-32">
+          <div
+            id="page-top"
+            className="site-page-shell portfolio-site-shell relative z-10 mx-auto w-full max-w-4xl px-6 pb-16 pt-28 sm:pb-20 sm:pt-32 lg:max-w-5xl"
+          >
             {children}
+            <SiteFooter />
           </div>
+          <BackToTop />
         </TooltipProvider>
       </ThemeProvider>
     </div>

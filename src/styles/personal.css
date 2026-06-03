@@ -3320,60 +3320,6 @@ h1 {
   background: rgba(99, 102, 241, 0.1);
 }
 
-.back-to-top-wrap {
-  display: flex;
-  justify-content: center;
-  padding: 0 1rem 4.5rem;
-}
-
-.back-to-top {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.55rem;
-  padding: 0.72rem 1.15rem;
-  border: 1px solid rgba(148, 163, 184, 0.35);
-  border-radius: 9999px;
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.86);
-  box-shadow:
-    0 14px 34px rgba(15, 23, 42, 0.12),
-    0 0 24px var(--dock-accent-glow);
-  text-decoration: none;
-  font-size: 0.92rem;
-  font-weight: 700;
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  transition:
-    transform 0.15s ease,
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-
-.back-to-top:hover,
-.back-to-top:focus-visible {
-  transform: translateY(-2px);
-  border-color: var(--dock-accent);
-  box-shadow:
-    0 18px 42px rgba(15, 23, 42, 0.16),
-    0 0 30px var(--dock-accent-glow);
-}
-
-.back-to-top:focus-visible {
-  outline: 2px solid var(--dock-accent);
-  outline-offset: 3px;
-}
-
-.back-to-top__icon {
-  display: grid;
-  place-items: center;
-  width: 1.7rem;
-  height: 1.7rem;
-  border-radius: 50%;
-  color: #fff;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.28);
-}
-
 .signup-main {
   min-height: 100dvh;
   display: grid;
@@ -3558,7 +3504,6 @@ h1 {
   color: var(--dock-accent);
 }
 
-:root[data-theme="dark"] .back-to-top,
 :root[data-theme="dark"] .signup-card {
   background: rgba(15, 23, 42, 0.86);
   border-color: rgba(148, 163, 184, 0.24);
@@ -3584,7 +3529,4 @@ h1 {
     grid-template-columns: 1fr;
   }
 
-  .back-to-top-wrap {
-    padding-bottom: 3.5rem;
-  }
 }

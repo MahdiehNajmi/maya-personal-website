@@ -6,6 +6,8 @@ import {
   TypingHero,
 } from "@/components/personal/personal-client";
 import { ThemeInitScript } from "@/components/personal/theme-init";
+import { BackToTop } from "@/components/site/back-to-top";
+import { SiteFooter } from "@/components/site/site-footer";
 import { PERSONAL } from "@/data/personal";
 import type { Metadata } from "next";
 import "@/styles/site-nav.css";
@@ -32,7 +34,14 @@ export default function PersonalLayout({
       <ThemeToggle />
       <PersonalClientEffects />
       <TypingHero />
-      {children}
+      <div
+        id="page-top"
+        className="site-page-shell site-page-shell--personal mx-auto w-full max-w-4xl px-6 pb-16 lg:max-w-5xl"
+      >
+        {children}
+        <SiteFooter />
+      </div>
+      <BackToTop />
       <MayaChatWidget />
     </>
   );

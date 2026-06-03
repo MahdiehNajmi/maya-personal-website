@@ -8,7 +8,7 @@ export const PERSONAL = {
     "I enjoy turning ideas into simple, meaningful digital experiences that solve real problems.",
   profileImage: "/images/profile.png",
   email: "mnajmi@mun.ca",
-  github: "https://github.com/MahdiehNajmi/maya-personal-website",
+  github: "https://github.com/MahdiehNajmi",
   about: {
     heading: "About Me",
     paragraphs: [

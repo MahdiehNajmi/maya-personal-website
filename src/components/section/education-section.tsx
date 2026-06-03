@@ -10,8 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
 import { DATA } from "@/data/resume";
-import { ArrowUpRight, ChevronDown } from "lucide-react";
-import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -62,18 +61,9 @@ export default function EducationSection() {
                   </AccordionTrigger>
                   <AccordionContent className="px-3 pb-2.5 pt-0 sm:px-4 sm:pb-3">
                     <div className="flex items-center justify-between gap-3 pl-10 sm:pl-10">
-                      <Link
-                        href={education.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="group inline-flex min-w-0 items-center gap-1.5 text-sm font-medium text-foreground"
-                      >
-                        <span className="truncate">{education.school}</span>
-                        <ArrowUpRight
-                          className="size-3 shrink-0 text-muted-foreground opacity-70 transition-all group-hover:translate-x-0.5 group-hover:opacity-100"
-                          aria-hidden
-                        />
-                      </Link>
+                      <span className="min-w-0 truncate text-sm font-medium text-muted-foreground">
+                        {education.school}
+                      </span>
                       {(education.start || education.end) && (
                         <span className="shrink-0 text-xs tabular-nums text-muted-foreground">
                           {education.start}

@@ -63,6 +63,42 @@ export const DATA = {
     "Docker",
     "Jupyter Notebook",
   ] as const,
+  skillCategories: [
+    {
+      name: "Frontend",
+      icon: "monitor" as const,
+      skills: ["React", "JavaScript", "Material UI", "HTML/CSS"],
+    },
+    {
+      name: "Backend",
+      icon: "server" as const,
+      skills: ["Node.js", "Express.js", "FastAPI", "Python"],
+    },
+    {
+      name: "Databases",
+      icon: "database" as const,
+      skills: ["Oracle", "SQL Server", "PostgreSQL", "MySQL", "MongoDB"],
+    },
+    {
+      name: "Cloud and data",
+      icon: "cloud" as const,
+      skills: [
+        "IAM",
+        "SageMaker AI",
+        "Lambda",
+        "Step Functions",
+        "EventBridge",
+        "AWS Glue",
+        "Athena",
+        "Power BI",
+      ],
+    },
+    {
+      name: "Tools",
+      icon: "wrench" as const,
+      skills: ["Postman", "Git / GitHub", "Docker", "Jupyter Notebook"],
+    },
+  ] as const,
   navbar: [
     { href: "/", icon: HomeIcon, label: "Personal site" },
     { href: PORTFOLIO_BASE, icon: LayoutGrid, label: "Portfolio" },
@@ -70,6 +106,9 @@ export const DATA = {
   ],
   contact: {
     email: "mnajmi@mun.ca",
+    calendlyUrl:
+      process.env.NEXT_PUBLIC_CALENDLY_URL?.trim() ||
+      "https://calendly.com/mayanajmi",
     tel: "",
     social: {
       GitHub: {

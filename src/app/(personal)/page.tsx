@@ -119,15 +119,6 @@ export default async function PersonalHomePage() {
           </div>
         </div>
       </section>
-
-      <div className="back-to-top-wrap" aria-label="End of home page">
-        <a className="back-to-top" href="#home">
-          <span className="back-to-top__icon" aria-hidden="true">
-            ↑
-          </span>
-          <span>Back to top</span>
-        </a>
-      </div>
     </main>
   );
 }
