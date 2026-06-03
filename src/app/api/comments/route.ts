@@ -25,10 +25,19 @@ const createSchema = z
 const MIN_POST_GAP_MS = 5000;
 let lastPostAt = 0;
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const { comments: items } = await listComments();
-    return NextResponse.json({ comments: items });
+    return NextResponse.json(
+      { comments: items },
+      {
+        headers: {
+          "Cache-Control": "no-store, max-age=0",
+        },
+      },
+    );
   } catch (e) {
     console.error("[comments] GET error:", e);
     return NextResponse.json(

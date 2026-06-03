@@ -2,7 +2,6 @@
 
 import { CommentImageAttachment } from "@/components/personal/comment-image-attachment";
 import { CommentEmojiPicker } from "@/components/personal/comment-emoji-picker";
-import { AnimatedList } from "@/components/ui/animated-list";
 import { formatCommentDate } from "@/lib/comments";
 import { PERSONAL } from "@/data/personal";
 import { authClient } from "@/lib/auth/client";
@@ -399,13 +398,6 @@ type Props = {
 
 const SCROLLABLE_COMMENTS_THRESHOLD = 4;
 
-function commentListDelay(count: number) {
-  if (count > 12) return 90;
-  if (count > 6) return 180;
-  if (count > 3) return 280;
-  return 400;
-}
-
 function sortCommentsNewestFirst(items: CommentItem[]) {
   return [...items].sort((a, b) => {
     const byDate =
@@ -467,17 +459,32 @@ export function CommentsSection({
   const bodyRef = useRef<HTMLTextAreaElement>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const uploadInFlightRef = useRef(false);
-  const [reduceMotion, setReduceMotion] = useState(false);
+  const [loadingComments, setLoadingComments] = useState(false);
 
-  useEffect(() => {
-    setReduceMotion(
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    );
+  const refreshComments = useCallback(async () => {
+    setLoadingComments(true);
+    try {
+      const res = await fetch("/api/comments", {
+        cache: "no-store",
+        credentials: "same-origin",
+      });
+      const data = (await res.json()) as {
+        comments?: CommentItem[];
+        error?: string;
+      };
+      if (res.ok && Array.isArray(data.comments)) {
+        setComments(sortCommentsNewestFirst(data.comments));
+      }
+    } catch {
+      // Keep existing list if refresh fails.
+    } finally {
+      setLoadingComments(false);
+    }
   }, []);
 
   useEffect(() => {
-    setComments(sortCommentsNewestFirst(initialComments));
-  }, [initialComments]);
+    void refreshComments();
+  }, [refreshComments]);
 
   useEffect(() => {
     const authError = searchParams.get("auth_error");
@@ -573,14 +580,12 @@ export function CommentsSection({
         return;
       }
 
-      if (data.comment) {
-        setComments((prev) => sortCommentsNewestFirst([data.comment!, ...prev]));
-      }
       setBody("");
       setWebsite("");
       setUploadedImages([]);
       if (fileRef.current) fileRef.current.value = "";
       setSuccess(true);
+      await refreshComments();
       router.refresh();
     } catch {
       setError(PERSONAL.comments.submitError);
@@ -689,9 +694,7 @@ export function CommentsSection({
     hasCommentContent;
 
   const displayName = sessionUserName ?? "Visitor";
-  const useScrollViewport =
-    comments.length >= SCROLLABLE_COMMENTS_THRESHOLD && !reduceMotion;
-  const useAnimatedList = comments.length > 1 && !reduceMotion;
+  const useScrollViewport = comments.length >= SCROLLABLE_COMMENTS_THRESHOLD;
   const isHomeVariant = variant === "home";
 
   return (
@@ -829,7 +832,9 @@ export function CommentsSection({
           {PERSONAL.comments.listHeading} ({comments.length})
         </h2>
 
-        {comments.length === 0 ? (
+        {loadingComments && comments.length === 0 ? (
+          <p className="comments-list__empty">Loading comments…</p>
+        ) : comments.length === 0 ? (
           <p className="comments-list__empty">{PERSONAL.comments.emptyMessage}</p>
         ) : (
           <div
@@ -840,22 +845,11 @@ export function CommentsSection({
             }
             role="list"
           >
-            {useAnimatedList ? (
-              <AnimatedList
-                className="comments-list__items comments-list__items--animated"
-                delay={commentListDelay(comments.length)}
-              >
-                {comments.map((c) => (
-                  <CommentCard key={c.id} comment={c} />
-                ))}
-              </AnimatedList>
-            ) : (
-              <div className="comments-list__items">
-                {comments.map((c) => (
-                  <CommentCard key={c.id} comment={c} />
-                ))}
-              </div>
-            )}
+            <div className="comments-list__items">
+              {comments.map((c) => (
+                <CommentCard key={c.id} comment={c} />
+              ))}
+            </div>
             {useScrollViewport ? (
               <div className="comments-list__fade" aria-hidden="true" />
             ) : null}
