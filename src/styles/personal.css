@@ -270,41 +270,122 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
   }
 }
 
+@keyframes journey-title-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
 .journey {
   position: relative;
   max-width: 100%;
   margin: 0 auto;
   padding: 2.25rem 1.25rem 2.75rem;
   scroll-margin-top: calc(var(--dock-clearance) + 0.5rem);
+  overflow: hidden;
+}
+
+.journey::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 28%, rgba(56, 189, 248, 0.09), transparent 42%),
+    radial-gradient(circle at 88% 72%, rgba(168, 85, 247, 0.08), transparent 38%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .journey-wrap {
+  position: relative;
+  z-index: 1;
   max-width: 100%;
 }
 
+.journey-card {
+  position: relative;
+  padding: 1.75rem 1.5rem;
+  border-radius: 16px;
+  border: 1px solid color-mix(in oklch, var(--border) 88%, transparent);
+  background: color-mix(in oklch, var(--surface) 90%, transparent);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(18px) saturate(1.35);
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+}
+
+.journey-card::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--rb-c1) 55%, transparent),
+    color-mix(in srgb, var(--rb-c2) 50%, transparent),
+    color-mix(in srgb, var(--rb-c3) 55%, transparent),
+    color-mix(in srgb, var(--rb-c4) 45%, transparent)
+  );
+  background-size: 200% 200%;
+  animation: rb-rainbow-move 12s linear infinite;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+:root[data-theme="dark"] .journey-card,
+:root.dark .journey-card {
+  background: color-mix(in oklch, var(--surface) 78%, transparent);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.32);
+}
+
 .journey-title {
-  margin: 0 0 1.35rem;
+  margin: 0 0 1.5rem;
   font-size: clamp(1.75rem, 4.5vw, 2.35rem);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.12;
   color: var(--text);
+  background: linear-gradient(
+    120deg,
+    var(--text) 0%,
+    var(--text) 38%,
+    color-mix(in oklch, var(--dock-accent) 65%, var(--text)) 50%,
+    var(--text) 62%,
+    var(--text) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: journey-title-shimmer 7s ease-in-out infinite alternate;
 }
 
 .journey-copy {
   margin: 0;
   padding-left: 1.25rem;
-  border-left: 2px solid var(--border);
+  border-left: 2px solid color-mix(in oklch, var(--dock-accent) 35%, var(--border));
 }
 
 .journey-para {
   position: relative;
-  margin: 0 0 1.15rem;
+  margin: 0 0 1.35rem;
   font-size: 1.05rem;
-  line-height: 1.72;
+  line-height: 1.78;
   color: var(--text);
 }
 
+.journey-copy > *:last-child .journey-para,
 .journey-para:last-child {
   margin-bottom: 0;
 }
@@ -317,8 +398,10 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
   width: 9px;
   height: 9px;
   border-radius: 50%;
-  background: var(--ui-accent);
-  box-shadow: 0 0 0 3px var(--bg);
+  background: var(--dock-accent);
+  box-shadow:
+    0 0 0 3px color-mix(in oklch, var(--surface) 92%, var(--bg)),
+    0 0 10px var(--dock-accent-glow);
 }
 
 .journey-kw {
@@ -332,12 +415,45 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
   border-radius: 0.35rem;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-:root[data-theme="dark"] .journey-kw {
+.journey-kw:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 14px var(--dock-accent-glow);
+}
+
+:root[data-theme="dark"] .journey-kw,
+:root.dark .journey-kw {
   color: #e0f2fe;
   background: rgba(56, 189, 248, 0.14);
   border-color: rgba(125, 211, 252, 0.32);
+}
+
+@media (min-width: 768px) {
+  .journey-card {
+    padding: 2rem 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-title {
+    animation: none;
+    background: none;
+    -webkit-text-fill-color: var(--text);
+    color: var(--text);
+  }
+
+  .journey-card::before {
+    animation: none;
+    background-size: auto;
+  }
+
+  .journey-kw:hover {
+    transform: none;
+  }
 }
 
 .contact {

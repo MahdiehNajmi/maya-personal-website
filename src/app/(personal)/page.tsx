@@ -1,3 +1,4 @@
+import { AboutSection } from "@/components/personal/about-section";
 import { HomeContactSection } from "@/components/personal/home-contact-section";
 import { CommentsSection } from "@/components/personal/comments-section";
 import { PERSONAL } from "@/data/personal";
@@ -6,32 +7,6 @@ import Image from "next/image";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
-
-function JourneyParagraph({
-  text,
-  keywords,
-}: {
-  text: string;
-  keywords: readonly string[];
-}) {
-  if (!keywords.length) {
-    return <p className="journey-para">{text}</p>;
-  }
-  let content: React.ReactNode = text;
-  for (const kw of keywords) {
-    const idx = text.indexOf(kw);
-    if (idx === -1) continue;
-    content = (
-      <>
-        {text.slice(0, idx)}
-        <span className="journey-kw">{kw}</span>
-        {text.slice(idx + kw.length)}
-      </>
-    );
-    break;
-  }
-  return <p className="journey-para">{content}</p>;
-}
 
 export default async function PersonalHomePage() {
   const { comments: initialComments, error: loadError } = await listComments();
@@ -70,22 +45,7 @@ export default async function PersonalHomePage() {
         </div>
       </section>
 
-      <section id="about" className="journey" aria-labelledby="about-heading">
-        <div className="journey-wrap">
-          <h2 id="about-heading" className="journey-title">
-            {PERSONAL.about.heading}
-          </h2>
-          <div className="journey-copy">
-            {PERSONAL.about.paragraphs.map((para, i) => (
-              <JourneyParagraph
-                key={i}
-                text={para.text}
-                keywords={para.keywords}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <AboutSection />
 
       <section
         id="comments"
