@@ -5,7 +5,7 @@ import { PERSONAL } from "@/data/personal";
 import { PORTFOLIO_BASE } from "@/lib/paths";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, type ComponentType, type SVGProps } from "react";
+import { useEffect, useState, type ComponentType, type SVGProps } from "react";
 
 const HomeIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg className="dock-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -61,13 +61,18 @@ const ResumeIcon = (props: SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
+type DockMatchContext = {
+  pathname: string;
+  hash: string;
+};
+
 type DockItem = {
   label: string;
   href: string;
   icon: ComponentType<SVGProps<SVGSVGElement>>;
   external?: boolean;
   action?: "resume";
-  match?: (pathname: string) => boolean;
+  match?: (ctx: DockMatchContext) => boolean;
 };
 
 const DOCK_ITEMS: DockItem[] = [
@@ -75,13 +80,14 @@ const DOCK_ITEMS: DockItem[] = [
     label: "Home",
     href: "/#home",
     icon: HomeIcon,
-    match: (pathname) => pathname === "/",
+    match: ({ pathname, hash }) =>
+      pathname === "/" && (hash === "" || hash === "home"),
   },
   {
     label: "Portfolio",
     href: PORTFOLIO_BASE,
     icon: PortfolioIcon,
-    match: (pathname) => pathname.startsWith(PORTFOLIO_BASE),
+    match: ({ pathname }) => pathname.startsWith(PORTFOLIO_BASE),
   },
   {
     label: "GitHub",
@@ -99,7 +105,7 @@ const DOCK_ITEMS: DockItem[] = [
     label: "About",
     href: "/#about",
     icon: AboutIcon,
-    match: (pathname) => pathname === "/",
+    match: ({ pathname, hash }) => pathname === "/" && hash === "about",
   },
   {
     label: "Resume",
@@ -111,7 +117,7 @@ const DOCK_ITEMS: DockItem[] = [
     label: "Contact",
     href: "/#contact",
     icon: ContactIcon,
-    match: (pathname) => pathname === "/",
+    match: ({ pathname, hash }) => pathname === "/" && hash === "contact",
   },
 ];
 
@@ -121,7 +127,16 @@ function dockItemClassName(isCurrent: boolean) {
 
 export function DockNav() {
   const pathname = usePathname();
+  const [hash, setHash] = useState("");
   const [resumeOpen, setResumeOpen] = useState(false);
+
+  useEffect(() => {
+    const syncHash = () => setHash(window.location.hash.replace(/^#/, ""));
+    syncHash();
+    window.addEventListener("hashchange", syncHash);
+    return () => window.removeEventListener("hashchange", syncHash);
+  }, [pathname]);
+
   return (
     <>
       <header className="dock-header" role="banner">
@@ -130,7 +145,8 @@ export function DockNav() {
             <ul className="dock" id="site-dock">
             {DOCK_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isCurrent = item.match?.(pathname) ?? false;
+              const isCurrent =
+                item.match?.({ pathname, hash }) ?? false;
               const className = dockItemClassName(isCurrent);
               const linkProps = {
                 className,
