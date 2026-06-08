@@ -1,6 +1,3 @@
-"use client";
-
-import BlurFade from "@/components/magicui/blur-fade";
 import { PERSONAL } from "@/data/personal";
 
 function JourneyParagraph({
@@ -35,19 +32,17 @@ export function AboutSection() {
   return (
     <section id="about" className="journey" aria-labelledby="about-heading">
       <div className="journey-wrap">
-        <div className="journey-card">
-          <BlurFade delay={0} inView>
-            <h2 id="about-heading" className="journey-title">
-              {PERSONAL.about.heading}
-            </h2>
-          </BlurFade>
-          <div className="journey-copy">
-            {PERSONAL.about.paragraphs.map((para, i) => (
-              <BlurFade key={i} delay={0.06 * (i + 1)} inView>
-                <JourneyParagraph text={para.text} keywords={para.keywords} />
-              </BlurFade>
-            ))}
-          </div>
+        <h2 id="about-heading" className="journey-title journey-title--shimmer">
+          {PERSONAL.about.heading}
+        </h2>
+        <div className="journey-copy">
+          {PERSONAL.about.paragraphs.map((para, i) => (
+            <JourneyParagraph
+              key={i}
+              text={para.text}
+              keywords={para.keywords}
+            />
+          ))}
         </div>
       </div>
     </section>
