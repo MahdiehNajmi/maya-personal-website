@@ -60,35 +60,37 @@ export function PortfolioSectionNav() {
 
   return (
     <nav className="portfolio-section-nav" aria-label="Portfolio sections">
-      <ul className="portfolio-section-nav__list">
-        {PORTFOLIO_SECTIONS.map((section) => {
-          const isActive = activeId === section.id;
-          return (
-            <li key={section.id}>
-              <a
-                href={`#${section.id}`}
-                className={cn(
-                  "portfolio-section-nav__link",
-                  isActive && "is-active",
-                )}
-                aria-current={isActive ? "location" : undefined}
-                onClick={(event) => {
-                  event.preventDefault();
-                  scrollToSection(section.id);
-                }}
-              >
-                <span
-                  className="portfolio-section-nav__indicator"
-                  aria-hidden
-                />
-                <span className="portfolio-section-nav__label">
-                  {section.label}
-                </span>
-              </a>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="portfolio-section-nav__panel">
+        <ul className="portfolio-section-nav__list">
+          {PORTFOLIO_SECTIONS.map((section) => {
+            const isActive = activeId === section.id;
+            return (
+              <li key={section.id}>
+                <a
+                  href={`#${section.id}`}
+                  className={cn(
+                    "portfolio-section-nav__link",
+                    isActive && "is-active",
+                  )}
+                  aria-current={isActive ? "location" : undefined}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    scrollToSection(section.id);
+                  }}
+                >
+                  <span
+                    className="portfolio-section-nav__indicator"
+                    aria-hidden
+                  />
+                  <span className="portfolio-section-nav__label">
+                    {section.label}
+                  </span>
+                </a>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
     </nav>
   );
 }
