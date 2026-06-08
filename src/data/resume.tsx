@@ -62,6 +62,8 @@ export const DATA = {
     "Git / GitHub",
     "Docker",
     "Jupyter Notebook",
+    "Cursor",
+    "Claude",
   ] as const,
   skillCategories: [
     {
@@ -96,7 +98,14 @@ export const DATA = {
     {
       name: "Tools",
       icon: "wrench" as const,
-      skills: ["Postman", "Git / GitHub", "Docker", "Jupyter Notebook"],
+      skills: [
+        "Postman",
+        "Git / GitHub",
+        "Docker",
+        "Jupyter Notebook",
+        "Cursor",
+        "Claude",
+      ],
     },
   ] as const,
   navbar: [

@@ -40,7 +40,7 @@
   max-width: 36rem;
   font-size: 1.05rem;
   line-height: 1.65;
-  color: var(--muted);
+  color: var(--text-muted);
 }
 
 .contact-icon-panel__nav {

@@ -1,27 +1,27 @@
 :root {
   color-scheme: light;
-  --bg: #e4eaf2;
-  --surface: rgba(248, 250, 252, 0.88);
-  --text: #0f172a;
-  --muted: #475569;
-  --border: #dbe2ea;
-  --accent: #0f172a;
-  --accent-hover: #1e293b;
+  --bg: oklch(0.995 0.006 255);
+  --surface: oklch(1 0.004 255);
+  --text: oklch(0.26 0.065 258);
+  --text-muted: oklch(0.46 0.045 258);
+  --border: oklch(0.88 0.03 255);
+  --ui-accent: oklch(0.26 0.065 258);
+  --ui-accent-hover: oklch(0.28 0.07 258);
   --dock-clearance: 7.25rem;
-  --dock-accent: #2563eb;
+  --dock-accent: oklch(0.52 0.17 252);
   --dock-accent-glow: rgba(37, 99, 235, 0.45);
   --light-rays-color: rgba(160, 210, 255, 0.35);
   --light-rays-length: 70vh;
   --light-rays-blur: 36px;
-  --link: #1d4ed8;
-  --link-hover: #1e40af;
+  --link: oklch(0.52 0.17 252);
+  --link-hover: oklch(0.45 0.15 252);
   --rb-c1: #ff4242;
   --rb-c2: #a855f7;
   --rb-c3: #22d3ee;
   --rb-c4: #4ade80;
   --rb-c5: #fbbf24;
-  --magic-card-inner-bg: rgba(248, 250, 252, 0.97);
-  --primary-foreground: #ffffff;
+  --magic-card-inner-bg: oklch(1 0.004 255);
+  --primary-foreground: oklch(0.99 0.01 255);
   --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
 }
 
@@ -32,19 +32,19 @@
 :root[data-theme="dark"],
 :root.dark {
   color-scheme: dark;
-  --dock-accent: #38bdf8;
+  --bg: oklch(0.2 0.048 258);
+  --surface: oklch(0.25 0.042 258);
+  --text: oklch(0.97 0.012 255);
+  --text-muted: oklch(0.74 0.045 252);
+  --border: oklch(0.42 0.06 258 / 0.35);
+  --ui-accent: oklch(0.97 0.012 255);
+  --ui-accent-hover: oklch(0.9 0.02 255);
+  --dock-accent: oklch(0.72 0.13 248);
   --dock-accent-glow: rgba(56, 189, 248, 0.4);
-  --bg: #060a10;
-  --surface: rgba(17, 24, 39, 0.82);
-  --text: #e8eef7;
-  --muted: #94a3b8;
-  --border: rgba(148, 163, 184, 0.22);
-  --accent: #f1f5f9;
-  --accent-hover: #e2e8f0;
   --light-rays-color: rgba(56, 189, 248, 0.12);
-  --link: #7dd3fc;
-  --link-hover: #bae6fd;
-  --magic-card-inner-bg: rgba(15, 23, 42, 0.94);
-  --primary-foreground: #0f172a;
+  --link: oklch(0.72 0.13 248);
+  --link-hover: oklch(0.82 0.1 248);
+  --magic-card-inner-bg: oklch(0.25 0.042 258);
+  --primary-foreground: oklch(0.18 0.055 260);
   --card-shadow: 0 16px 48px rgba(0, 0, 0, 0.35);
 }

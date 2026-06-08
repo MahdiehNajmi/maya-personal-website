@@ -50,9 +50,15 @@
 
 :root[data-theme="dark"] .dock-shell,
 :root.dark .dock-shell {
+  background: linear-gradient(
+    135deg,
+    rgba(56, 189, 248, 0.55),
+    rgba(168, 85, 247, 0.45),
+    rgba(74, 222, 128, 0.4)
+  );
   box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
-    0 20px 55px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 16px 48px rgba(0, 0, 0, 0.55),
     0 0 32px var(--dock-accent-glow);
 }
 
@@ -79,8 +85,9 @@
 
 :root[data-theme="dark"] .dock,
 :root.dark .dock {
-  background: rgba(15, 23, 42, 0.78);
-  border-color: rgba(148, 163, 184, 0.22);
+  background: rgba(10, 15, 28, 0.92);
+  border-color: rgba(148, 163, 184, 0.28);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
 }
 
 .dock::-webkit-scrollbar {
@@ -183,7 +190,7 @@
 
 .resume-modal__eyebrow {
   margin: 0 0 0.2rem;
-  color: var(--muted);
+  color: var(--text-muted);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -275,7 +282,7 @@
 .resume-modal__secondary {
   border: 1px solid rgba(148, 163, 184, 0.3);
   background: transparent;
-  color: var(--muted);
+  color: var(--text-muted);
   padding: 0.6rem 0.95rem;
 }
 
@@ -316,7 +323,8 @@
 
 :root[data-theme="dark"] .dock-item,
 :root.dark .dock-item {
-  background: rgba(30, 41, 59, 0.82);
+  color: #e2e8f0;
+  background: rgba(30, 41, 59, 0.55);
   border-color: rgba(148, 163, 184, 0.2);
 }
 
@@ -334,7 +342,9 @@
 :root[data-theme="dark"] .dock-item:focus-visible,
 :root.dark .dock-item:hover,
 :root.dark .dock-item:focus-visible {
-  background: rgba(51, 65, 85, 0.92);
+  background: rgba(51, 65, 85, 0.85);
+  border-color: rgba(125, 211, 252, 0.45);
+  color: #f8fafc;
   box-shadow: 0 0 20px var(--dock-accent-glow);
 }
 
@@ -356,6 +366,20 @@
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.65) inset,
     0 0 20px var(--dock-accent-glow);
+}
+
+:root[data-theme="dark"] .dock-item--current,
+:root.dark .dock-item--current {
+  background: linear-gradient(
+    145deg,
+    rgba(56, 189, 248, 0.28),
+    rgba(99, 102, 241, 0.32)
+  );
+  border-color: rgba(125, 211, 252, 0.55);
+  color: #f8fafc;
+  box-shadow:
+    0 0 0 1px rgba(125, 211, 252, 0.25) inset,
+    0 0 24px var(--dock-accent-glow);
 }
 
 .dock-icon {
@@ -518,7 +542,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
   text-align: center;
   font-size: 0.82rem;
   font-weight: 500;
-  color: var(--muted);
+  color: var(--text-muted);
   letter-spacing: 0.02em;
 }
 
@@ -533,7 +557,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
   padding: 0.25rem;
   border: none;
   border-radius: 0;
-  color: var(--muted);
+  color: var(--text-muted);
   background: transparent;
   box-shadow: none;
   text-decoration: none;

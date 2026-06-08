@@ -58,7 +58,7 @@
   --secondary: color-mix(in srgb, var(--surface) 88%, var(--border));
   --secondary-foreground: var(--text);
   --muted: color-mix(in srgb, var(--bg) 82%, var(--border));
-  --muted-foreground: var(--muted);
+  --muted-foreground: var(--text-muted);
   --accent: var(--surface);
   --accent-foreground: var(--text);
   --destructive: oklch(0.577 0.245 27.325);
@@ -82,14 +82,6 @@
 @layer base {
   * {
     @apply border-border;
-  }
-
-  body {
-    background-color: var(--bg);
-    color: var(--text);
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Helvetica Neue", Arial, sans-serif;
-    transition: background-color 0.35s ease, color 0.35s ease;
   }
 
   /* Shiki dual theme support */
@@ -331,7 +323,7 @@
     padding: 0.4rem 0 0.4rem 1.1rem;
     margin-left: -2px;
     border-left: 2px solid transparent;
-    color: var(--muted);
+    color: var(--text-muted);
     font-size: 0.9rem;
     font-weight: 500;
     line-height: 1.4;
@@ -381,7 +373,7 @@
   max-width: 42rem;
   font-size: 1.05rem;
   line-height: 1.65;
-  color: var(--muted);
+  color: var(--text-muted);
   text-wrap: balance;
 }
 

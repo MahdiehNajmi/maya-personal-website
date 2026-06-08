@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { PERSONAL } from "@/data/personal";
+import "@/styles/site-tokens.css";
+import "@/styles/site-base.css";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL?.trim() ||
