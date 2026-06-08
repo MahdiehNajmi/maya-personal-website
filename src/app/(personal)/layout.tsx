@@ -10,9 +10,11 @@ import { BackToTop } from "@/components/site/back-to-top";
 import { SiteFooter } from "@/components/site/site-footer";
 import { PERSONAL } from "@/data/personal";
 import type { Metadata } from "next";
+import "@/styles/site-tokens.css";
 import "@/styles/site-nav.css";
 import "@/styles/personal.css";
 import "@/styles/hero-shimmer.css";
+import "@/styles/contact-panel.css";
 
 export const metadata: Metadata = {
   title: PERSONAL.title,

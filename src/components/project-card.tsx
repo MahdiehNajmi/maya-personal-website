@@ -123,7 +123,7 @@ export function ProjectCard({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-xl border border-border transition-all duration-200 hover:ring-2 hover:ring-muted",
+        "portfolio-surface-card overflow-hidden transition-all duration-200 hover:border-[color-mix(in_srgb,var(--dock-accent)_35%,var(--border))]",
         isRow ? "flex flex-col sm:flex-row" : "flex flex-col",
         compact && !isRow ? "max-h-[380px] cursor-pointer" : "",
         !compact && !isRow && "h-full",

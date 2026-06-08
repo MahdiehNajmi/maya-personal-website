@@ -1,7 +1,7 @@
 import BlurFade from "@/components/magicui/blur-fade";
+import { PortfolioSectionTitle } from "@/components/site/portfolio-section-title";
 import { Badge } from "@/components/ui/badge";
 import { DATA } from "@/data/resume";
-import { History } from "lucide-react";
 
 const BLUR_FADE_DELAY = 0.04;
 
@@ -13,7 +13,7 @@ type PreviousProjectItem = {
 
 function PreviousProjectCard({ project }: { project: PreviousProjectItem }) {
   return (
-    <div className="flex h-full flex-col gap-2 rounded-xl border border-border bg-card p-4">
+    <div className="portfolio-surface-card flex h-full flex-col gap-2 p-4">
       <h4 className="text-sm font-semibold leading-snug">{project.title}</h4>
       {project.description ? (
         <p className="text-xs leading-relaxed text-muted-foreground">
@@ -40,20 +40,10 @@ export default function PreviousProjectsSection() {
     <section id="previous-projects">
       <BlurFade delay={BLUR_FADE_DELAY * 13}>
         <div className="mx-auto flex w-full max-w-[800px] flex-col gap-y-6">
-          <div className="flex w-full items-center">
-            <div className="h-px flex-1 bg-linear-to-r from-transparent from-5% via-border via-95% to-transparent" />
-            <div className="z-10 inline-flex animate-gradient items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-[length:200%_auto] px-4 py-1.5 shadow-lg shadow-purple-500/30 ring-1 ring-white/20">
-              <History className="size-3.5 text-white" aria-hidden />
-              <span className="text-sm font-semibold tracking-wide text-white">
-                {DATA.previousProjects.heading}
-              </span>
-            </div>
-            <div className="h-px flex-1 bg-linear-to-l from-transparent from-5% via-border via-95% to-transparent" />
-          </div>
-
-          <p className="text-center text-sm text-muted-foreground md:text-base">
-            {DATA.previousProjects.intro}
-          </p>
+          <PortfolioSectionTitle
+            title={DATA.previousProjects.heading}
+            subtitle={DATA.previousProjects.intro}
+          />
 
           <div className="flex flex-col gap-3">
             <div className="grid auto-rows-fr grid-cols-1 items-stretch gap-3 sm:grid-cols-2">

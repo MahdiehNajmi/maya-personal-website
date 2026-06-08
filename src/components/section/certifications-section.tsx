@@ -2,7 +2,7 @@
 import BlurFade from "@/components/magicui/blur-fade";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Card, CardContent } from "@/components/ui/card";
-import { Award } from "lucide-react";
+import { PortfolioSectionTitle } from "@/components/site/portfolio-section-title";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
 
@@ -51,22 +51,14 @@ export default function CertificationsSection() {
   return (
     <section id="certifications" className="flex min-h-0 flex-col gap-y-4">
       <BlurFade delay={BLUR_FADE_DELAY * 10.5}>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <Award
-              className="size-5 shrink-0 text-primary"
-              strokeWidth={2}
-              aria-hidden
-            />
-            <h2 className="text-xl font-bold">Certifications</h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Professional Development
-          </p>
-        </div>
+        <PortfolioSectionTitle
+          title="Certifications"
+          subtitle="Professional Development"
+          align="left"
+        />
       </BlurFade>
       <BlurFade delay={BLUR_FADE_DELAY * 11}>
-        <Card className="relative w-full overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <Card className="portfolio-surface-card relative w-full overflow-hidden text-card-foreground">
           <CardContent className="relative z-10 p-3 sm:p-4">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {DATA.certifications.map((c) => (

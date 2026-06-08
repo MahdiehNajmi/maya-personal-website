@@ -9,6 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card } from "@/components/ui/card";
+import { PortfolioSectionTitle } from "@/components/site/portfolio-section-title";
 import { DATA } from "@/data/resume";
 import { ChevronDown } from "lucide-react";
 
@@ -34,10 +35,10 @@ export default function EducationSection() {
     <section id="education">
       <div className="flex min-h-0 flex-col gap-y-6">
         <BlurFade delay={BLUR_FADE_DELAY * 7}>
-          <h2 className="text-xl font-bold">Education</h2>
+          <PortfolioSectionTitle title="Education" align="left" />
         </BlurFade>
         <BlurFade delay={BLUR_FADE_DELAY * 8}>
-          <Card className="overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+          <Card className="portfolio-surface-card overflow-hidden text-card-foreground">
             <Accordion
               type="single"
               collapsible

@@ -1,4 +1,4 @@
-import { ContactActions } from "@/components/personal/contact-actions";
+import { HomeContactSection } from "@/components/personal/home-contact-section";
 import { CommentsSection } from "@/components/personal/comments-section";
 import { PERSONAL } from "@/data/personal";
 import { listComments } from "@/lib/comments";
@@ -104,19 +104,9 @@ export default async function PersonalHomePage() {
         </div>
       </section>
 
-      <section
-        id="contact"
-        className="contact"
-        aria-labelledby="contact-heading"
-      >
+      <section id="contact" className="contact" aria-label="Contact">
         <div className="contact-wrap">
-          <h2 id="contact-heading" className="journey-title">
-            {PERSONAL.contact.heading}
-          </h2>
-          <div className="contact-card">
-            <p className="contact-lead">{PERSONAL.contact.lead}</p>
-            <ContactActions />
-          </div>
+          <HomeContactSection />
         </div>
       </section>
     </main>

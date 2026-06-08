@@ -1,52 +1,28 @@
 /* eslint-disable @next/next/no-img-element */
+import { PortfolioSectionTitle } from "@/components/site/portfolio-section-title";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { DATA } from "@/data/resume";
 import { Timeline, TimelineItem, TimelineConnectItem } from "@/components/timeline";
 
+function hackathonsSubtitle() {
+  if (DATA.hackathons.length === 0) {
+    return "Add your hackathon highlights in src/data/resume.tsx to populate this timeline.";
+  }
+  if (DATA.hackathons.length === 1) {
+    return "Below is a hardware build from a local hackathon—quick prototypes, real constraints, and a lot of learning in a short window.";
+  }
+  return `During my time in university, I attended ${DATA.hackathons.length}+ hackathons. People from around the country would come together and build incredible things in 2-3 days.`;
+}
+
 export default function HackathonsSection() {
   return (
     <section id="hackathons" className="overflow-hidden">
       <div className="flex min-h-0 flex-col gap-y-8 w-full">
-        <div className="flex flex-col gap-y-4 items-center justify-center">
-          <div className="flex items-center w-full">
-            <div className="flex-1 h-px bg-linear-to-r from-transparent from-5% via-border via-95% to-transparent" />
-            <div className="border bg-primary z-10 rounded-xl px-4 py-1">
-              <span className="text-background text-sm font-medium">Hackathons</span>
-            </div>
-            <div className="flex-1 h-px bg-linear-to-l from-transparent from-5% via-border via-95% to-transparent" />
-          </div>
-          <div className="flex flex-col gap-y-3 items-center justify-center">
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">I like building things</h2>
-            <p className="text-muted-foreground md:text-lg/relaxed lg:text-base/relaxed xl:text-lg/relaxed text-balance text-center">
-              {DATA.hackathons.length > 0 ? (
-                DATA.hackathons.length === 1 ? (
-                  <>
-                    Below is a hardware build from a local hackathon—quick
-                    prototypes, real constraints, and a lot of learning in a short
-                    window.
-                  </>
-                ) : (
-                  <>
-                    During my time in university, I attended{" "}
-                    {DATA.hackathons.length}+ hackathons. People from around the
-                    country would come together and build incredible things in 2-3
-                    days. It was eye-opening to see the endless possibilities brought
-                    to life by a group of motivated and passionate individuals.
-                  </>
-                )
-              ) : (
-                <>
-                  Add your hackathon highlights in{" "}
-                  <code className="rounded bg-muted px-1.5 py-0.5 text-xs">
-                    src/data/resume.tsx
-                  </code>{" "}
-                  to populate this timeline.
-                </>
-              )}
-            </p>
-          </div>
-        </div>
+        <PortfolioSectionTitle
+          title="Hackathons"
+          subtitle={hackathonsSubtitle()}
+        />
         <Timeline>
           {DATA.hackathons.map((hackathon) => (
             <TimelineItem key={hackathon.title + hackathon.dates} className="w-full flex items-start justify-between gap-10">

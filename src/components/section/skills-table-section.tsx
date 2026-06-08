@@ -1,4 +1,5 @@
 import BlurFade from "@/components/magicui/blur-fade";
+import { PortfolioSectionTitle } from "@/components/site/portfolio-section-title";
 import { BorderBeam } from "@/components/ui/border-beam";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,7 +8,6 @@ import { cn } from "@/lib/utils";
 import {
   Cloud,
   Database,
-  Layers2,
   Monitor,
   Server,
   Wrench,
@@ -76,22 +76,14 @@ export function SkillsTableSection() {
   return (
     <section id="skills" className="flex min-h-0 flex-col gap-y-4 scroll-mt-28">
       <BlurFade delay={BLUR_FADE_DELAY * 9}>
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-2">
-            <Layers2
-              className="size-5 shrink-0 text-primary"
-              strokeWidth={2}
-              aria-hidden
-            />
-            <h2 className="text-xl font-bold">Skills</h2>
-          </div>
-          <p className="text-sm text-muted-foreground">
-            Technologies and tools I work with
-          </p>
-        </div>
+        <PortfolioSectionTitle
+          title="Skills"
+          subtitle="Technologies and tools I work with"
+          align="left"
+        />
       </BlurFade>
       <BlurFade delay={BLUR_FADE_DELAY * 9.5}>
-        <Card className="relative w-full overflow-hidden rounded-xl border border-border bg-card text-card-foreground shadow-sm">
+        <Card className="portfolio-surface-card relative w-full overflow-hidden text-card-foreground">
           <CardContent className="relative z-10 p-3 sm:p-4">
             <div className="grid gap-3 md:grid-cols-2">
               {DATA.skillCategories.map((category) => (

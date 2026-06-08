@@ -3,7 +3,6 @@
 import { ResumePreviewModal } from "@/components/personal/resume-preview-modal";
 import { PERSONAL } from "@/data/personal";
 import { PORTFOLIO_BASE } from "@/lib/paths";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, type ComponentType, type SVGProps } from "react";
@@ -123,17 +122,9 @@ function dockItemClassName(isCurrent: boolean) {
 export function DockNav() {
   const pathname = usePathname();
   const [resumeOpen, setResumeOpen] = useState(false);
-  const portfolioSidebarLayout = pathname.startsWith(PORTFOLIO_BASE);
-
   return (
     <>
-      <header
-        className={cn(
-          "dock-header",
-          portfolioSidebarLayout && "dock-header--portfolio-grid",
-        )}
-        role="banner"
-      >
+      <header className="dock-header" role="banner">
         <div className="dock-header__align">
           <nav className="dock-shell" aria-label="Main navigation">
             <ul className="dock" id="site-dock">

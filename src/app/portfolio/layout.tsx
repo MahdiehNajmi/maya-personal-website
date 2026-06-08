@@ -6,27 +6,12 @@ import {
 import { ThemeInitScript } from "@/components/personal/theme-init";
 import { BackToTop } from "@/components/site/back-to-top";
 import { SiteFooter } from "@/components/site/site-footer";
-import { ThemeProvider } from "@/components/theme-provider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
-import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import "@/styles/site-tokens.css";
 import "./globals.css";
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
 import "@/styles/site-nav.css";
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-mono",
-});
+import "@/styles/contact-panel.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
@@ -55,41 +40,22 @@ export default function PortfolioLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div
-      className={cn(
-        "portfolio-root min-h-screen bg-background font-sans antialiased relative",
-        geist.variable,
-        geistMono.variable,
-      )}
-    >
+    <>
       <ThemeInitScript />
-      <ThemeProvider attribute="class" defaultTheme="dark">
-        <TooltipProvider delayDuration={0}>
-          <DockNav />
-          <ThemeToggle />
-          <PersonalClientEffects />
-          <div className="absolute inset-0 top-0 left-0 right-0 h-[100px] overflow-hidden z-0">
-            <FlickeringGrid
-              className="h-full w-full"
-              squareSize={2}
-              gridGap={2}
-              style={{
-                maskImage: "linear-gradient(to bottom, black, transparent)",
-                WebkitMaskImage:
-                  "linear-gradient(to bottom, black, transparent)",
-              }}
-            />
-          </div>
-          <div
-            id="page-top"
-            className="site-page-shell portfolio-site-shell relative z-10 mx-auto w-full max-w-4xl px-6 pb-16 pt-28 sm:pb-20 sm:pt-32 lg:max-w-5xl"
-          >
-            {children}
-            <SiteFooter />
-          </div>
-          <BackToTop />
-        </TooltipProvider>
-      </ThemeProvider>
-    </div>
+      <a className="skip-link" href="#page-top">
+        Skip to content
+      </a>
+      <DockNav />
+      <ThemeToggle />
+      <PersonalClientEffects />
+      <div
+        id="page-top"
+        className="site-page-shell portfolio-site-shell relative z-10 mx-auto w-full max-w-4xl px-6 lg:max-w-5xl"
+      >
+        {children}
+        <SiteFooter />
+      </div>
+      <BackToTop />
+    </>
   );
 }
