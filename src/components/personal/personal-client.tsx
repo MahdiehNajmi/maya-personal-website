@@ -8,7 +8,7 @@ function initDockMagnification() {
   const dock = document.getElementById("site-dock");
   if (!dock) return;
   const items = Array.from(
-    dock.querySelectorAll<HTMLAnchorElement>(".dock-item"),
+    dock.querySelectorAll<HTMLElement>(".dock-item"),
   );
   if (!items.length) return;
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

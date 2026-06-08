@@ -7,7 +7,7 @@
   --border: oklch(0.88 0.03 255);
   --ui-accent: oklch(0.26 0.065 258);
   --ui-accent-hover: oklch(0.28 0.07 258);
-  --dock-clearance: 7.25rem;
+  --dock-clearance: 7.75rem;
   --dock-accent: oklch(0.52 0.17 252);
   --dock-accent-glow: rgba(37, 99, 235, 0.45);
   --light-rays-color: rgba(160, 210, 255, 0.35);
