@@ -766,7 +766,7 @@ h1 {
 }
 
 .section {
-  max-width: 42rem;
+  max-width: 100%;
   margin: 0 auto;
   padding: 3rem 1.25rem;
   scroll-margin-top: calc(var(--dock-clearance) + 0.5rem);
@@ -778,12 +778,24 @@ h1 {
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   max-width: none;
-  padding-left: max(1.25rem, calc(50% - 21rem));
-  padding-right: max(1.25rem, calc(50% - 21rem));
+  padding-left: max(
+    1.25rem,
+    calc(
+      50% -
+        min(var(--site-content-max), 100vw - var(--site-content-gutter) * 2) / 2
+    )
+  );
+  padding-right: max(
+    1.25rem,
+    calc(
+      50% -
+        min(var(--site-content-max), 100vw - var(--site-content-gutter) * 2) / 2
+    )
+  );
 }
 
 .section-muted > * {
-  max-width: 42rem;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }

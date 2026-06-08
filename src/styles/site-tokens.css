@@ -7,7 +7,7 @@
   --border: oklch(0.88 0.03 255);
   --ui-accent: oklch(0.26 0.065 258);
   --ui-accent-hover: oklch(0.28 0.07 258);
-  --dock-clearance: 7.75rem;
+  --dock-clearance: 7.25rem;
   --dock-accent: oklch(0.52 0.17 252);
   --dock-accent-glow: rgba(37, 99, 235, 0.45);
   --light-rays-color: rgba(160, 210, 255, 0.35);
@@ -23,13 +23,14 @@
   --magic-card-inner-bg: oklch(1 0.004 255);
   --primary-foreground: oklch(0.99 0.01 255);
   --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
-  --site-content-max: 56rem;
+  --site-dock-max: 42rem;
+  --site-content-max: 52rem;
   --site-content-gutter: 1.5rem;
 }
 
 @media (min-width: 1024px) {
   :root {
-    --site-content-max: 64rem;
+    --site-content-max: 56rem;
   }
 }
 
