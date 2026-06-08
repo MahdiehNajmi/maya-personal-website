@@ -23,6 +23,14 @@
   --magic-card-inner-bg: oklch(1 0.004 255);
   --primary-foreground: oklch(0.99 0.01 255);
   --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+  --site-content-max: 56rem;
+  --site-content-gutter: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --site-content-max: 64rem;
+  }
 }
 
 :root[data-theme="light"] {

@@ -161,7 +161,6 @@
   }
 }
 
-.dock-header,
 main {
   position: relative;
   z-index: 1;
@@ -193,38 +192,6 @@ main {
 
 .skip-link:focus {
   left: 0.75rem;
-}
-
-.dock-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  padding: 0.75rem 0.75rem 0;
-  pointer-events: none;
-}
-
-.dock-shell {
-  pointer-events: auto;
-  max-width: min(100vw - 1.25rem, 68rem);
-  padding: 2px;
-  border-radius: 9999px;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 66, 66, 0.65),
-    rgba(168, 85, 247, 0.6),
-    rgba(34, 211, 238, 0.65),
-    rgba(74, 222, 128, 0.55)
-  );
-  box-shadow:
-    0 0 0 1px rgba(255, 255, 255, 0.35) inset,
-    0 14px 40px rgba(15, 23, 42, 0.18),
-    0 0 28px var(--dock-accent-glow);
-  animation: rb-rainbow-move 8s linear infinite;
-  background-size: 200% 200%;
 }
 
 .dock {
@@ -439,7 +406,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 
 .journey {
   position: relative;
-  max-width: 44rem;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2.25rem 1.25rem 2.75rem;
   scroll-margin-top: calc(var(--dock-clearance) + 0.5rem);
@@ -509,7 +476,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 
 .contact {
   position: relative;
-  max-width: 44rem;
+  max-width: 100%;
   margin: 0 auto;
   padding: 2.25rem 1.25rem 2.75rem;
   scroll-margin-top: calc(var(--dock-clearance) + 0.5rem);
@@ -547,7 +514,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 }
 
 .home-comments-wrap {
-  max-width: 46rem;
+  max-width: 100%;
   margin: 0 auto;
 }
 
@@ -566,7 +533,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 }
 
 .comments-page--home .comments-page__lead {
-  max-width: 44rem;
+  max-width: 48ch;
   margin-left: auto;
   margin-right: auto;
 }
@@ -592,7 +559,7 @@ html[data-theme="dark"] .theme-toggle__icon--moon {
 
 .hero-card {
   width: 100%;
-  max-width: 52rem;
+  max-width: 100%;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 16px;

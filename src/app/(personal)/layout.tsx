@@ -38,7 +38,7 @@ export default function PersonalLayout({
       <TypingHero />
       <div
         id="page-top"
-        className="site-page-shell site-page-shell--personal mx-auto w-full max-w-4xl px-6 pb-16 lg:max-w-5xl"
+        className="site-page-shell site-page-shell--personal w-full pb-16"
       >
         {children}
         <SiteFooter />

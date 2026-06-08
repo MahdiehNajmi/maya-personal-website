@@ -50,7 +50,7 @@ export default function PortfolioLayout({
       <PersonalClientEffects />
       <div
         id="page-top"
-        className="site-page-shell portfolio-site-shell relative z-10 mx-auto w-full max-w-4xl px-6 lg:max-w-5xl"
+        className="site-page-shell portfolio-site-shell relative z-10 w-full"
       >
         {children}
         <SiteFooter />
