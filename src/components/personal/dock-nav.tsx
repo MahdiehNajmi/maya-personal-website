@@ -1,11 +1,10 @@
 "use client";
 
 import { ResumePreviewModal } from "@/components/personal/resume-preview-modal";
-import { PERSONAL } from "@/data/personal";
 import { PORTFOLIO_BASE } from "@/lib/paths";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState, type ComponentType, type SVGProps } from "react";
+import { useEffect, useState, type ComponentType, type MouseEvent, type SVGProps } from "react";
 
 const HomeIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg className="dock-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -25,13 +24,6 @@ const PortfolioIcon = (props: SVGProps<SVGSVGElement>) => (
 const GitHubIcon = (props: SVGProps<SVGSVGElement>) => (
   <svg className="dock-icon" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor" {...props}>
     <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.48 0-.24-.01-.87-.01-1.7-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.67.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.7 0 0 .84-.27 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85.004 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.4.2 2.44.1 2.7.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.59.69.48A10.01 10.01 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z" />
-  </svg>
-);
-
-const EmailIcon = (props: SVGProps<SVGSVGElement>) => (
-  <svg className="dock-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-    <polyline points="22,6 12,13 2,6" />
   </svg>
 );
 
@@ -96,12 +88,6 @@ const DOCK_ITEMS: DockItem[] = [
     external: true,
   },
   {
-    label: "Email",
-    href: `mailto:${PERSONAL.email}`,
-    icon: EmailIcon,
-    external: true,
-  },
-  {
     label: "About",
     href: "/#about",
     icon: AboutIcon,
@@ -125,6 +111,12 @@ function dockItemClassName(isCurrent: boolean) {
   return isCurrent ? "dock-item dock-item--current" : "dock-item";
 }
 
+function hashFromHref(href: string): string | null {
+  const hashIndex = href.indexOf("#");
+  if (hashIndex === -1) return null;
+  return href.slice(hashIndex + 1);
+}
+
 export function DockNav() {
   const pathname = usePathname();
   const [hash, setHash] = useState("");
@@ -132,10 +124,44 @@ export function DockNav() {
 
   useEffect(() => {
     const syncHash = () => setHash(window.location.hash.replace(/^#/, ""));
+
     syncHash();
     window.addEventListener("hashchange", syncHash);
-    return () => window.removeEventListener("hashchange", syncHash);
+    window.addEventListener("popstate", syncHash);
+
+    return () => {
+      window.removeEventListener("hashchange", syncHash);
+      window.removeEventListener("popstate", syncHash);
+    };
   }, [pathname]);
+
+  const syncHashFromHref = (href: string) => {
+    const nextHash = hashFromHref(href);
+    if (nextHash !== null) {
+      setHash(nextHash);
+      return;
+    }
+    if (!href.startsWith("http")) {
+      setHash("");
+    }
+  };
+
+  const handleDockLinkClick = (
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    const nextHash = hashFromHref(href);
+    if (pathname === "/" && href.startsWith("/#") && nextHash !== null) {
+      event.preventDefault();
+      document
+        .getElementById(nextHash)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      history.pushState(null, "", href);
+      setHash(nextHash);
+      return;
+    }
+    syncHashFromHref(href);
+  };
 
   return (
     <>
@@ -184,7 +210,11 @@ export function DockNav() {
                       {content}
                     </a>
                   ) : (
-                    <Link {...linkProps} href={item.href}>
+                    <Link
+                      {...linkProps}
+                      href={item.href}
+                      onClick={(event) => handleDockLinkClick(event, item.href)}
+                    >
                       {content}
                     </Link>
                   )}

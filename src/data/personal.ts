@@ -4,8 +4,11 @@ export const PERSONAL = {
   name: "Maya",
   title: "Maya",
   metaDescription: "Personal website of Maya, Developer.",
-  typingText: "Hi, this is Maya",
-  roleLine: "DATA ANALYST | AI DATA ENGINEER | FULL-STACK DEVELOPER",
+  typingText: "Hi, this is Mahdieh",
+  roleLines: [
+    '"FULL-STACK DEVELOPER" | AI DATA ENGINEER |',
+    "DATA ANALYST",
+  ],
   intro:
     "I enjoy turning ideas into simple, meaningful digital experiences that solve real problems.",
   profileImage: "/images/profile.png",

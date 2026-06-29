@@ -39,7 +39,13 @@ export default async function PersonalHomePage() {
                 |
               </span>
             </h1>
-            <p className="hero-role">{PERSONAL.roleLine}</p>
+            <p className="hero-role">
+              {PERSONAL.roleLines.map((line) => (
+                <span key={line} className="hero-role__line">
+                  {line}
+                </span>
+              ))}
+            </p>
             <p className="intro">{PERSONAL.intro}</p>
           </div>
         </div>

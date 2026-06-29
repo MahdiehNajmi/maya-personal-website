@@ -24,6 +24,7 @@
   --primary-foreground: oklch(0.99 0.01 255);
   --card-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
   --site-dock-max: 42rem;
+  --site-dock-frame-width: 32rem;
   --site-content-max: 52rem;
   --site-content-gutter: 1.5rem;
 }

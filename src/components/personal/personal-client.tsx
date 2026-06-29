@@ -20,8 +20,8 @@ function initDockMagnification() {
     frame = null;
     if (lastX === null) return;
     const x = lastX;
-    const influence = 140;
-    const maxExtra = 0.58;
+    const influence = 120;
+    const maxExtra = 0.1;
     for (const el of items) {
       const rect = el.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
