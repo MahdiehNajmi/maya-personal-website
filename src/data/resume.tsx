@@ -41,10 +41,13 @@ export const DATA = {
     "JavaScript",
     "Material UI",
     "HTML/CSS",
+    "Blazor",
     "Node.js",
     "Express.js",
     "FastAPI",
     "Python",
+    "C#",
+    "ASP.NET",
     "Oracle",
     "SQL Server",
     "PostgreSQL",
@@ -57,7 +60,7 @@ export const DATA = {
     "EventBridge",
     "AWS Glue",
     "Athena",
-    "Power BI",
+    "Microsoft Power BI",
     "Postman",
     "Git / GitHub",
     "Docker",
@@ -69,12 +72,12 @@ export const DATA = {
     {
       name: "Frontend",
       icon: "monitor" as const,
-      skills: ["React", "JavaScript", "Material UI", "HTML/CSS"],
+      skills: ["React", "JavaScript", "Material UI", "HTML/CSS", "Blazor"],
     },
     {
       name: "Backend",
       icon: "server" as const,
-      skills: ["Node.js", "Express.js", "FastAPI", "Python"],
+      skills: ["Node.js", "Express.js", "FastAPI", "Python", "C#", "ASP.NET"],
     },
     {
       name: "Databases",
@@ -92,7 +95,7 @@ export const DATA = {
         "EventBridge",
         "AWS Glue",
         "Athena",
-        "Power BI",
+        "Microsoft Power BI",
       ],
     },
     {
@@ -316,7 +319,7 @@ export const DATA = {
       description:
         "**Problem:** Accurate house-price models need large datasets moved through reproducible ML pipelines—manual notebooks alone do not scale.\n\n**Approach:** Kaggle-based end-to-end pipeline on AWS: SageMaker notebooks, Lambda and Step Functions orchestration, EventBridge triggers, IAM-scoped access, S3 medallion layers, CloudWatch and RDS where needed, with Power BI for predictions, feature importance, and trends.\n\n**Results:** Automated cloud-native pipeline from ingest through training and governed access, with stakeholder dashboards in Power BI.\n\n[Case study with diagrams →](/portfolio/blog/aws-house-price-prediction)",
       technologies: [
-        "Power BI",
+        "Microsoft Power BI",
         "Amazon SageMaker",
         "AWS Lambda",
         "AWS Step Functions",
